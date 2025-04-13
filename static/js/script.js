@@ -8,71 +8,144 @@ document.addEventListener('DOMContentLoaded', function() {
     const loadingSpinner = document.getElementById('loading-spinner');
     const conversionAlert = document.getElementById('conversion-alert');
     const characterCount = document.getElementById('character-count');
+    const durationEstimate = document.getElementById('duration');
     const clearTextBtn = document.getElementById('clear-text-btn');
     const sampleTextBtn = document.getElementById('sample-text-btn');
+    const hiddenForm = document.getElementById('tts-form');
+    const formText = document.getElementById('form-text');
+    const formVoice = document.getElementById('form-voice');
+    const faqQuestions = document.querySelectorAll('.faq-question');
+    const menuButton = document.getElementById('menu-button');
 
     // Variables to store state
     let selectedVoice = '';
     let voices = {};
-    let audioBlob = null;
     
     // Sample texts for various languages
     const sampleTexts = {
-        'en-US': "Welcome to Edge TTS Converter! This is a sample text to demonstrate the text-to-speech capabilities.",
-        'es-ES': "¡Bienvenido al Conversor Edge TTS! Este es un texto de muestra para demostrar las capacidades de texto a voz.",
-        'fr-FR': "Bienvenue sur Edge TTS Converter! Ceci est un exemple de texte pour démontrer les capacités de synthèse vocale.",
-        'de-DE': "Willkommen beim Edge TTS Converter! Dies ist ein Beispieltext, um die Text-to-Speech-Funktionen zu demonstrieren.",
-        'hi-IN': "एज टीटीएस कनवर्टर में आपका स्वागत है! यह टेक्स्ट-टू-स्पीच क्षमताओं को प्रदर्शित करने के लिए एक नमूना पाठ है।",
-        'ar-SA': "مرحبًا بك في محول Edge TTS! هذا نص عينة لإظهار إمكانيات تحويل النص إلى كلام.",
-        'default': "Welcome to Edge TTS Converter! This is a sample text to demonstrate the text-to-speech capabilities."
+        'en-US': "Welcome to VoiceSync! This is a sample text to demonstrate the text-to-speech capabilities.",
+        'es-ES': "¡Bienvenido a VoiceSync! Este es un texto de muestra para demostrar las capacidades de texto a voz.",
+        'fr-FR': "Bienvenue sur VoiceSync! Ceci est un exemple de texte pour démontrer les capacités de synthèse vocale.",
+        'de-DE': "Willkommen bei VoiceSync! Dies ist ein Beispieltext, um die Text-to-Speech-Funktionen zu demonstrieren.",
+        'hi-IN': "वॉइसिंक में आपका स्वागत है! यह टेक्स्ट-टू-स्पीच क्षमताओं को प्रदर्शित करने के लिए एक नमूना पाठ है।",
+        'ar-SA': "مرحبًا بك في فويس سينك! هذا نص عينة لإظهار إمكانيات تحويل النص إلى كلام.",
+        'default': "Welcome to VoiceSync! This is a sample text to demonstrate the text-to-speech capabilities."
     };
 
-    // Add fade-in animation to the entire body
-    document.body.classList.add('fade-in');
+    // Initialize
+    initializeApp();
 
-    // Animate elements with delay
-    setTimeout(() => {
-        // Animate hero section
-        animateHero();
-    }, 100);
+    // Setup event listeners
+    setupEventListeners();
 
-    // Fetch voices
-    fetchVoices();
-
-    // Event listeners
-    voiceGroupSelect.addEventListener('change', populateVoiceSelect);
-    textInput.addEventListener('input', updateCharacterCount);
-    clearTextBtn.addEventListener('click', clearText);
-    sampleTextBtn.addEventListener('click', insertSampleText);
-    
-    // Initialize character count
-    updateCharacterCount();
-    
-    // Add animation on scroll
-    window.addEventListener('scroll', animateOnScroll);
-    
-    // Initially trigger scroll animation
-    setTimeout(animateOnScroll, 500);
-    
-    // Function to animate elements on scroll
-    function animateOnScroll() {
-        const animatedElements = document.querySelectorAll('.card');
+    // Main initialization function
+    function initializeApp() {
+        // Fetch voices from the server
+        fetchVoices();
         
-        animatedElements.forEach(element => {
-            const elementPosition = element.getBoundingClientRect().top;
-            const screenPosition = window.innerHeight / 1.3;
-            
-            if (elementPosition < screenPosition) {
-                element.style.opacity = '1';
-                element.style.transform = 'translateY(0)';
-            }
+        // Initialize character count
+        updateCharacterCount();
+        
+        // Set up smooth scrolling for anchor links
+        setupSmoothScrolling();
+        
+        // Set up FAQ accordions
+        setupFaqAccordions();
+    }
+
+    // Set up event listeners
+    function setupEventListeners() {
+        // Form controls
+        voiceGroupSelect.addEventListener('change', populateVoiceSelect);
+        textInput.addEventListener('input', updateCharacterCount);
+        clearTextBtn.addEventListener('click', clearText);
+        sampleTextBtn.addEventListener('click', insertSampleText);
+        convertBtn.addEventListener('click', handleConvert);
+        
+        // Mobile menu
+        if (menuButton) {
+            menuButton.addEventListener('click', toggleMobileMenu);
+        }
+    }
+
+    // Handle mobile menu toggle
+    function toggleMobileMenu() {
+        const nav = document.querySelector('nav');
+        if (nav.classList.contains('hidden')) {
+            nav.classList.remove('hidden');
+            nav.classList.add('flex', 'flex-col', 'absolute', 'top-16', 'left-0', 'right-0', 'bg-white', 'shadow-md', 'p-4', 'z-50');
+        } else {
+            nav.classList.add('hidden');
+            nav.classList.remove('flex', 'flex-col', 'absolute', 'top-16', 'left-0', 'right-0', 'bg-white', 'shadow-md', 'p-4', 'z-50');
+        }
+    }
+
+    // Set up smooth scrolling for anchor links
+    function setupSmoothScrolling() {
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop,
+                        behavior: 'smooth'
+                    });
+                }
+            });
         });
     }
-    
-    // Function to animate hero section
-    function animateHero() {
-        const hero = document.querySelector('.hero');
-        hero.classList.add('animate');
+
+    // Set up FAQ accordions
+    function setupFaqAccordions() {
+        faqQuestions.forEach(question => {
+            question.addEventListener('click', function() {
+                const answer = this.nextElementSibling;
+                const icon = this.querySelector('i');
+                
+                if (answer.classList.contains('hidden')) {
+                    answer.classList.remove('hidden');
+                    icon.setAttribute('data-lucide', 'chevron-up');
+                } else {
+                    answer.classList.add('hidden');
+                    icon.setAttribute('data-lucide', 'chevron-down');
+                }
+                
+                // Re-render the icon
+                lucide.createIcons({
+                    icons: {
+                        'chevron-up': icon.dataset.lucide === 'chevron-up',
+                        'chevron-down': icon.dataset.lucide === 'chevron-down'
+                    },
+                    element: icon.parentElement
+                });
+            });
+        });
+    }
+
+    // Handle convert button click
+    function handleConvert() {
+        const text = textInput.value.trim();
+        selectedVoice = voiceSelect.value;
+        
+        if (!text) {
+            showAlert('Please enter some text to convert.', 'error');
+            return;
+        }
+        
+        // Set form values
+        formText.value = text;
+        formVoice.value = selectedVoice;
+        
+        // Show loading spinner
+        showLoading(true);
+        
+        // Submit the form
+        hiddenForm.submit();
     }
 
     // Function to fetch voices from the server
@@ -89,7 +162,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(error => {
                 console.error('Error fetching voices:', error);
-                showAlert('Error fetching voices. Please try again.', 'danger');
+                showAlert('Error fetching voices. Please try again.', 'error');
                 showLoading(false);
             });
     }
@@ -131,143 +204,93 @@ document.addEventListener('DOMContentLoaded', function() {
     function createSpeakerCards() {
         speakerCardsContainer.innerHTML = '';
         
-        // Update the title with a more stylish look
-        const speakerSectionTitle = document.querySelector('.speaker-cards h4');
-        if (speakerSectionTitle) {
-            speakerSectionTitle.className = 'mb-4 speaker-cards-title';
-        }
-        
         // Select a few featured languages with better coverage
         const featuredLanguages = [
             'en-US', 'es-ES', 'fr-FR', 'de-DE', 'hi-IN', 'ar-SA'
         ];
         
-        // Add cards with staggered animation delay
+        // Add cards with staggered animation
         featuredLanguages.forEach((lang, index) => {
             if (voices[lang] && voices[lang].length > 0) {
                 // Pick the first voice of each featured language
                 const voice = voices[lang][0];
                 
-                // Get a gender-appropriate icon
-                let genderIcon = 'user';
-                if (voice.gender === 'Female') {
-                    genderIcon = 'female';
-                } else if (voice.gender === 'Male') {
-                    genderIcon = 'male';
-                }
-                
                 const card = document.createElement('div');
-                card.className = 'col-md-4 mb-4';
-                card.style.transitionDelay = `${index * 0.1}s`;
+                card.className = 'voice-card bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition';
+                card.dataset.voiceId = voice.name;
+                card.dataset.language = lang;
+                
+                // Generate a random avatar using initials from the voice name
+                const initials = voice.display_name.split(' ').map(word => word[0]).join('').toUpperCase();
+                const genderClass = voice.gender === 'Female' ? 'bg-blue-100 text-blue-600' : 'bg-indigo-100 text-indigo-600';
+                
+                const traits = ['Natural', voice.gender, getLanguageName(lang)];
+                const traitHtml = traits.map(trait => 
+                    `<span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">${trait}</span>`
+                ).join('');
                 
                 card.innerHTML = `
-                    <div class="card h-100 speaker-card" data-voice="${voice.name}">
-                        <div class="card-header text-center">
-                            <h5 class="card-title mb-0">
-                                <i class="fas fa-${genderIcon} me-2"></i>
-                                ${getLanguageName(lang)}
-                            </h5>
+                    <div class="flex items-center mb-4">
+                        <div class="w-14 h-14 rounded-full flex items-center justify-center ${genderClass} font-bold text-xl mr-4">
+                            ${initials}
                         </div>
-                        <div class="card-body text-center">
-                            <p class="card-text">${voice.display_name}</p>
-                            <div class="badge bg-${voice.gender === 'Female' ? 'info' : 'primary'} mb-3">${voice.gender}</div>
-                            <div class="d-grid">
-                                <button class="btn btn-outline-${voice.gender === 'Female' ? 'info' : 'primary'} select-voice-btn">
-                                    <i class="fas fa-headphones me-2"></i>Select Voice
-                                </button>
-                            </div>
+                        <div>
+                            <h3 class="font-semibold text-lg">${voice.display_name}</h3>
+                            <p class="text-gray-600">${getLanguageName(lang)} | ${voice.gender}</p>
                         </div>
                     </div>
+                    <div class="flex flex-wrap gap-1 mt-2">
+                        ${traitHtml}
+                    </div>
                 `;
+                
+                // Add click event listener to select this voice
+                card.addEventListener('click', function() {
+                    // Set the voice group and voice select values
+                    voiceGroupSelect.value = lang;
+                    populateVoiceSelect();
+                    voiceSelect.value = voice.name;
+                    selectedVoice = voice.name;
+                    
+                    // Highlight selected card
+                    document.querySelectorAll('.voice-card').forEach(c => c.classList.remove('selected'));
+                    this.classList.add('selected');
+                    
+                    // Scroll to converter section
+                    document.getElementById('converter').scrollIntoView({ behavior: 'smooth' });
+                });
                 
                 speakerCardsContainer.appendChild(card);
             }
         });
-        
-        // Add event listeners to speaker cards
-        document.querySelectorAll('.select-voice-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const card = this.closest('.speaker-card');
-                const voiceName = card.dataset.voice;
-                
-                // Find the language of this voice
-                let voiceLanguage = '';
-                Object.keys(voices).forEach(lang => {
-                    voices[lang].forEach(voice => {
-                        if (voice.name === voiceName) {
-                            voiceLanguage = lang;
-                        }
-                    });
-                });
-                
-                // Set the voice group and voice select values
-                if (voiceLanguage) {
-                    voiceGroupSelect.value = voiceLanguage;
-                    populateVoiceSelect();
-                    voiceSelect.value = voiceName;
-                    selectedVoice = voiceName;
-                }
-            });
-        });
     }
-
-    // Function to set up form submission
-    function convertText() {
-        const text = textInput.value.trim();
-        selectedVoice = voiceSelect.value;
-        
-        if (!text) {
-            showAlert('Please enter some text to convert.', 'warning');
-            return false;
-        }
-
-        // The form will handle the submission directly to the server
-        // No AJAX needed in this approach
-        showLoading(true);
-        return true;
-    }
-
-    // Set up the form submission
-    document.getElementById('tts-form').addEventListener('submit', function(e) {
-        // Let convertText function validate the input
-        if (!convertText()) {
-            e.preventDefault(); // Prevent form submission if validation fails
-        }
-    });
 
     // Helper function to show loading spinner
     function showLoading(show) {
         if (show) {
-            loadingSpinner.style.display = 'block';
-            loadingSpinner.style.opacity = '0';
-            setTimeout(() => {
-                loadingSpinner.style.opacity = '1';
-            }, 10);
+            loadingSpinner.classList.remove('hidden');
         } else {
-            loadingSpinner.style.opacity = '0';
-            setTimeout(() => {
-                loadingSpinner.style.display = 'none';
-            }, 300);
+            loadingSpinner.classList.add('hidden');
         }
     }
 
     // Helper function to show alerts
     function showAlert(message, type) {
-        conversionAlert.textContent = message;
-        conversionAlert.className = `alert alert-${type} mt-3`;
-        conversionAlert.style.display = 'block';
+        // Map type to Tailwind classes
+        const alertClasses = {
+            'success': 'bg-green-50 border-green-500 text-green-700',
+            'error': 'bg-red-50 border-red-500 text-red-700',
+            'warning': 'bg-yellow-50 border-yellow-500 text-yellow-700',
+            'info': 'bg-blue-50 border-blue-500 text-blue-700'
+        };
         
-        // Add show-alert class for animation
-        setTimeout(() => {
-            conversionAlert.classList.add('show-alert');
-        }, 10);
+        conversionAlert.className = `mt-6 p-4 rounded-lg border border-l-4 ${alertClasses[type] || alertClasses.info}`;
+        conversionAlert.textContent = message;
+        conversionAlert.classList.remove('hidden');
         
         // Hide alert after 5 seconds
         setTimeout(() => {
-            conversionAlert.classList.remove('show-alert');
-            setTimeout(() => {
-                conversionAlert.style.display = 'none';
-            }, 400);
+            conversionAlert.classList.add('hidden');
         }, 5000);
     }
 
@@ -275,15 +298,19 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateCharacterCount() {
         const text = textInput.value;
         const count = text.length;
-        characterCount.textContent = `${count} character${count !== 1 ? 's' : ''}`;
+        characterCount.textContent = `${count}/5000 characters`;
         
-        // Change color based on length
-        if (count > 500) {
-            characterCount.style.color = 'var(--bs-warning)';
-        } else if (count > 1000) {
-            characterCount.style.color = 'var(--bs-danger)';
+        // Estimate duration (approximately 15 characters per second)
+        const seconds = Math.ceil(count / 15);
+        durationEstimate.textContent = `Estimated duration: ${seconds}s`;
+        
+        // Enable/disable convert button based on text length
+        if (count > 0 && count <= 5000) {
+            convertBtn.disabled = false;
+            convertBtn.classList.remove('opacity-50', 'cursor-not-allowed');
         } else {
-            characterCount.style.color = '';
+            convertBtn.disabled = true;
+            convertBtn.classList.add('opacity-50', 'cursor-not-allowed');
         }
     }
     
@@ -291,11 +318,6 @@ document.addEventListener('DOMContentLoaded', function() {
     function clearText() {
         textInput.value = '';
         updateCharacterCount();
-        // Add a small animation to the button
-        clearTextBtn.classList.add('active');
-        setTimeout(() => {
-            clearTextBtn.classList.remove('active');
-        }, 200);
     }
     
     // Function to insert sample text
@@ -311,14 +333,11 @@ document.addEventListener('DOMContentLoaded', function() {
         textInput.value = textToInsert;
         updateCharacterCount();
         
-        // Animate the text area
-        textInput.classList.add('pulse');
+        // Flash effect
+        textInput.classList.add('ring-2', 'ring-blue-300');
         setTimeout(() => {
-            textInput.classList.remove('pulse');
+            textInput.classList.remove('ring-2', 'ring-blue-300');
         }, 500);
-        
-        // Show a brief message
-        showAlert('Sample text inserted for ' + getLanguageName(selectedGroup), 'info');
     }
 
     // Helper function to get language name from code
