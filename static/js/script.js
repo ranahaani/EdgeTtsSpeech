@@ -8,11 +8,25 @@ document.addEventListener('DOMContentLoaded', function() {
     const voiceGroupSelect = document.getElementById('voice-group-select');
     const loadingSpinner = document.getElementById('loading-spinner');
     const conversionAlert = document.getElementById('conversion-alert');
+    const characterCount = document.getElementById('character-count');
+    const clearTextBtn = document.getElementById('clear-text-btn');
+    const sampleTextBtn = document.getElementById('sample-text-btn');
 
     // Variables to store state
     let selectedVoice = '';
     let voices = {};
     let audioBlob = null;
+    
+    // Sample texts for various languages
+    const sampleTexts = {
+        'en-US': "Welcome to Edge TTS Converter! This is a sample text to demonstrate the text-to-speech capabilities.",
+        'es-ES': "¡Bienvenido al Conversor Edge TTS! Este es un texto de muestra para demostrar las capacidades de texto a voz.",
+        'fr-FR': "Bienvenue sur Edge TTS Converter! Ceci est un exemple de texte pour démontrer les capacités de synthèse vocale.",
+        'de-DE': "Willkommen beim Edge TTS Converter! Dies ist ein Beispieltext, um die Text-to-Speech-Funktionen zu demonstrieren.",
+        'hi-IN': "एज टीटीएस कनवर्टर में आपका स्वागत है! यह टेक्स्ट-टू-स्पीच क्षमताओं को प्रदर्शित करने के लिए एक नमूना पाठ है।",
+        'ar-SA': "مرحبًا بك في محول Edge TTS! هذا نص عينة لإظهار إمكانيات تحويل النص إلى كلام.",
+        'default': "Welcome to Edge TTS Converter! This is a sample text to demonstrate the text-to-speech capabilities."
+    };
 
     // Add fade-in animation to the entire body
     document.body.classList.add('fade-in');
@@ -30,6 +44,12 @@ document.addEventListener('DOMContentLoaded', function() {
     convertBtn.addEventListener('click', convertText);
     downloadBtn.addEventListener('click', downloadAudio);
     voiceGroupSelect.addEventListener('change', populateVoiceSelect);
+    textInput.addEventListener('input', updateCharacterCount);
+    clearTextBtn.addEventListener('click', clearText);
+    sampleTextBtn.addEventListener('click', insertSampleText);
+    
+    // Initialize character count
+    updateCharacterCount();
     
     // Add animation on scroll
     window.addEventListener('scroll', animateOnScroll);
@@ -114,25 +134,51 @@ document.addEventListener('DOMContentLoaded', function() {
     function createSpeakerCards() {
         speakerCardsContainer.innerHTML = '';
         
-        // Select a few featured languages
+        // Update the title with a more stylish look
+        const speakerSectionTitle = document.querySelector('.speaker-cards h4');
+        if (speakerSectionTitle) {
+            speakerSectionTitle.className = 'mb-4 speaker-cards-title';
+        }
+        
+        // Select a few featured languages with better coverage
         const featuredLanguages = [
-            'en-US', 'es-ES', 'fr-FR', 'de-DE', 'hi-IN'
+            'en-US', 'es-ES', 'fr-FR', 'de-DE', 'hi-IN', 'ar-SA'
         ];
         
-        featuredLanguages.forEach(lang => {
+        // Add cards with staggered animation delay
+        featuredLanguages.forEach((lang, index) => {
             if (voices[lang] && voices[lang].length > 0) {
                 // Pick the first voice of each featured language
                 const voice = voices[lang][0];
                 
+                // Get a gender-appropriate icon
+                let genderIcon = 'user';
+                if (voice.gender === 'Female') {
+                    genderIcon = 'female';
+                } else if (voice.gender === 'Male') {
+                    genderIcon = 'male';
+                }
+                
                 const card = document.createElement('div');
                 card.className = 'col-md-4 mb-4';
+                card.style.transitionDelay = `${index * 0.1}s`;
+                
                 card.innerHTML = `
                     <div class="card h-100 speaker-card" data-voice="${voice.name}">
+                        <div class="card-header text-center">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-${genderIcon} me-2"></i>
+                                ${getLanguageName(lang)}
+                            </h5>
+                        </div>
                         <div class="card-body text-center">
-                            <h5 class="card-title">${getLanguageName(lang)}</h5>
                             <p class="card-text">${voice.display_name}</p>
-                            <p class="small text-muted">${voice.gender}</p>
-                            <button class="btn btn-outline-primary btn-sm select-voice-btn">Select Voice</button>
+                            <div class="badge bg-${voice.gender === 'Female' ? 'info' : 'primary'} mb-3">${voice.gender}</div>
+                            <div class="d-grid">
+                                <button class="btn btn-outline-${voice.gender === 'Female' ? 'info' : 'primary'} select-voice-btn">
+                                    <i class="fas fa-headphones me-2"></i>Select Voice
+                                </button>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -228,7 +274,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Helper function to show loading spinner
     function showLoading(show) {
-        loadingSpinner.style.display = show ? 'block' : 'none';
+        if (show) {
+            loadingSpinner.style.display = 'block';
+            loadingSpinner.style.opacity = '0';
+            setTimeout(() => {
+                loadingSpinner.style.opacity = '1';
+            }, 10);
+        } else {
+            loadingSpinner.style.opacity = '0';
+            setTimeout(() => {
+                loadingSpinner.style.display = 'none';
+            }, 300);
+        }
     }
 
     // Helper function to show alerts
@@ -237,9 +294,17 @@ document.addEventListener('DOMContentLoaded', function() {
         conversionAlert.className = `alert alert-${type} mt-3`;
         conversionAlert.style.display = 'block';
         
+        // Add show-alert class for animation
+        setTimeout(() => {
+            conversionAlert.classList.add('show-alert');
+        }, 10);
+        
         // Hide alert after 5 seconds
         setTimeout(() => {
-            conversionAlert.style.display = 'none';
+            conversionAlert.classList.remove('show-alert');
+            setTimeout(() => {
+                conversionAlert.style.display = 'none';
+            }, 400);
         }, 5000);
     }
 

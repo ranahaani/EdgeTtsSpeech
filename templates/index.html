@@ -17,11 +17,16 @@
 <body>
     <!-- Header Section -->
     <header class="py-3 mb-4 border-bottom">
-        <div class="container d-flex align-items-center justify-content-center">
+        <div class="container d-flex align-items-center justify-content-between">
             <a href="/" class="d-flex align-items-center text-decoration-none">
-                <i class="fas fa-microphone-alt fs-3 me-2"></i>
-                <span class="fs-4 fw-bold">Edge TTS Converter</span>
+                <i class="fas fa-microphone-alt text-info fs-3 me-2"></i>
+                <span class="fs-4 fw-bold">Edge TTS <span class="text-info">Converter</span></span>
             </a>
+            <div class="d-flex align-items-center">
+                <button class="btn btn-outline-light btn-sm rounded-pill px-3 border-0" disabled>
+                    <i class="fas fa-volume-up me-2"></i>Text to Speech
+                </button>
+            </div>
         </div>
     </header>
 
@@ -43,27 +48,56 @@
                         <h4><i class="fas fa-keyboard me-2"></i>Enter Your Text</h4>
                     </div>
                     <div class="card-body">
-                        <div class="mb-3">
-                            <label for="text-input" class="form-label">Text to Convert</label>
-                            <textarea class="form-control" id="text-input" rows="8" placeholder="Type or paste the text you want to convert to speech..."></textarea>
+                        <div class="mb-4">
+                            <label for="text-input" class="form-label">
+                                <i class="fas fa-pen-fancy me-1"></i> Text to Convert
+                            </label>
+                            <div class="position-relative">
+                                <textarea class="form-control" id="text-input" rows="8" 
+                                    placeholder="Type or paste the text you want to convert to speech..."></textarea>
+                                <div class="position-absolute bottom-0 end-0 p-2 text-muted small fw-light character-count" 
+                                    id="character-count">0 characters</div>
+                            </div>
+                            <div class="mt-2 text-end">
+                                <button class="btn btn-sm btn-outline-secondary" id="clear-text-btn">
+                                    <i class="fas fa-eraser me-1"></i> Clear
+                                </button>
+                                <button class="btn btn-sm btn-outline-info" id="sample-text-btn">
+                                    <i class="fas fa-quote-right me-1"></i> Insert Sample
+                                </button>
+                            </div>
                         </div>
                         
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="voice-group-select" class="form-label">Language</label>
-                                <select class="form-select" id="voice-group-select">
-                                    <option value="" selected disabled>Loading languages...</option>
-                                </select>
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <label for="voice-group-select" class="form-label">
+                                    <i class="fas fa-globe me-1"></i> Language
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-transparent border-end-0">
+                                        <i class="fas fa-language text-info"></i>
+                                    </span>
+                                    <select class="form-select border-start-0" id="voice-group-select">
+                                        <option value="" selected disabled>Loading languages...</option>
+                                    </select>
+                                </div>
                             </div>
                             <div class="col-md-6">
-                                <label for="voice-select" class="form-label">Voice</label>
-                                <select class="form-select" id="voice-select">
-                                    <option value="" selected disabled>Select a language first</option>
-                                </select>
+                                <label for="voice-select" class="form-label">
+                                    <i class="fas fa-user-alt me-1"></i> Voice
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-transparent border-end-0">
+                                        <i class="fas fa-microphone text-info"></i>
+                                    </span>
+                                    <select class="form-select border-start-0" id="voice-select">
+                                        <option value="" selected disabled>Select a language first</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                         
-                        <div class="d-grid gap-2 d-md-flex">
+                        <div class="d-grid gap-2 d-md-flex mt-4">
                             <button class="btn btn-primary action-btn" id="convert-btn">
                                 <i class="fas fa-magic me-2"></i>Convert to Speech
                             </button>
@@ -114,11 +148,21 @@
     </main>
 
     <!-- Footer -->
-    <footer class="py-4 mt-5 bg-dark">
-        <div class="container text-center">
-            <p class="mb-0 text-muted">
-                <small>Edge TTS Converter | Powered by Microsoft Edge TTS</small>
-            </p>
+    <footer class="py-4 mt-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start">
+                    <div class="d-flex align-items-center justify-content-center justify-content-md-start">
+                        <i class="fas fa-microphone-alt text-info me-2"></i>
+                        <p class="mb-0 fw-bold">Edge TTS <span class="text-info">Converter</span></p>
+                    </div>
+                </div>
+                <div class="col-md-6 text-center text-md-end mt-3 mt-md-0">
+                    <p class="mb-0 text-muted">
+                        <small>Powered by Microsoft Edge TTS | <i class="far fa-copyright"></i> 2025</small>
+                    </p>
+                </div>
+            </div>
         </div>
     </footer>
 
