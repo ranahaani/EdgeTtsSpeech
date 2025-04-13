@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles */
+@layer components {
+    .gradient-bg {
+        @apply bg-gradient-to-r from-[#ee7752] via-[#e73c7e] to-[#23a6d5];
+        background-size: 400% 400%;
+        animation: gradient 15s ease infinite;
+    }
+
+    .voice-card {
+        @apply transition-all duration-300;
+    }
+
+    .voice-card:hover {
+        @apply transform -translate-y-0.5;
+    }
+}
+
+@keyframes gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+} 

@@ -604,6 +604,23 @@ section {
     margin: 0;
 }
 
+.voice-traits {
+    font-size: 0.7rem;
+    color: var(--secondary-color);
+    margin-top: 0.25rem;
+    font-style: italic;
+}
+
+.voice-personalities {
+    font-size: 0.75rem;
+    color: var(--secondary-color);
+    margin: 0.75rem 0;
+    padding: 0.25rem 0.5rem;
+    background-color: rgba(244, 114, 182, 0.1);
+    border-radius: var(--radius-md);
+    display: inline-block;
+}
+
 .hide-on-cards {
     display: none;
 }

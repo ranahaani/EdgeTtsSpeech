@@ -209,6 +209,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                     <h4>${shortName}</h4>
                     <p>${voice.gender}</p>
+                    ${voice.personalities ? `<div class="voice-traits">${voice.personalities}</div>` : ''}
                 `;
                 
                 card.addEventListener('click', function() {
@@ -262,6 +263,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <h3>${shortName}</h3>
                     <p>${getLanguageName(lang)}</p>
                     <div class="voice-badge">${voice.gender}</div>
+                    ${voice.personalities ? `<div class="voice-personalities">${voice.personalities}</div>` : ''}
                     <button class="voice-btn select-voice-btn" data-voice="${voice.name}">
                         <i class="fas fa-headphones"></i> Select Voice
                     </button>
