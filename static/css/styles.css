@@ -304,6 +304,45 @@ body {
     background-color: rgba(0, 0, 0, 0.2);
 }
 
+/* Feature list styling */
+.feature-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background-color: rgba(0, 123, 255, 0.1);
+    border-radius: 50%;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.feature-list .d-flex:hover .feature-icon {
+    transform: scale(1.1);
+    background-color: rgba(0, 123, 255, 0.2);
+}
+
+/* Text area animations */
+.pulse {
+    animation: pulse-animation 0.5s ease;
+}
+
+@keyframes pulse-animation {
+    0% {
+        box-shadow: 0 0 0 0 rgba(var(--bs-info-rgb), 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(var(--bs-info-rgb), 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(var(--bs-info-rgb), 0);
+    }
+}
+
+/* Button active state */
+.btn.active {
+    transform: scale(0.95);
+}
+
 /* Alert messages */
 #conversion-alert {
     display: none;

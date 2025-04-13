@@ -308,6 +308,56 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 5000);
     }
 
+    // Function to update character count display
+    function updateCharacterCount() {
+        const text = textInput.value;
+        const count = text.length;
+        characterCount.textContent = `${count} character${count !== 1 ? 's' : ''}`;
+        
+        // Change color based on length
+        if (count > 500) {
+            characterCount.style.color = 'var(--bs-warning)';
+        } else if (count > 1000) {
+            characterCount.style.color = 'var(--bs-danger)';
+        } else {
+            characterCount.style.color = '';
+        }
+    }
+    
+    // Function to clear the text input
+    function clearText() {
+        textInput.value = '';
+        updateCharacterCount();
+        // Add a small animation to the button
+        clearTextBtn.classList.add('active');
+        setTimeout(() => {
+            clearTextBtn.classList.remove('active');
+        }, 200);
+    }
+    
+    // Function to insert sample text
+    function insertSampleText() {
+        const selectedGroup = voiceGroupSelect.value;
+        let textToInsert = sampleTexts['default'];
+        
+        // Get sample text for selected language if available
+        if (selectedGroup && sampleTexts[selectedGroup]) {
+            textToInsert = sampleTexts[selectedGroup];
+        }
+        
+        textInput.value = textToInsert;
+        updateCharacterCount();
+        
+        // Animate the text area
+        textInput.classList.add('pulse');
+        setTimeout(() => {
+            textInput.classList.remove('pulse');
+        }, 500);
+        
+        // Show a brief message
+        showAlert('Sample text inserted for ' + getLanguageName(selectedGroup), 'info');
+    }
+
     // Helper function to get language name from code
     function getLanguageName(code) {
         const languageNames = {
