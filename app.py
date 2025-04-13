@@ -49,7 +49,7 @@ async def voices():
         voice_groups[language].append({
             "name": voice["ShortName"],
             "gender": voice["Gender"],
-            "display_name": voice["DisplayName"],
+            "display_name": voice["FriendlyName"],
             "language": voice["Locale"]
         })
     

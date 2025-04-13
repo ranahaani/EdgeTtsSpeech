@@ -14,8 +14,14 @@ document.addEventListener('DOMContentLoaded', function() {
     let voices = {};
     let audioBlob = null;
 
-    // Animate hero section
-    animateHero();
+    // Add fade-in animation to the entire body
+    document.body.classList.add('fade-in');
+
+    // Animate elements with delay
+    setTimeout(() => {
+        // Animate hero section
+        animateHero();
+    }, 100);
 
     // Fetch voices
     fetchVoices();
@@ -24,6 +30,27 @@ document.addEventListener('DOMContentLoaded', function() {
     convertBtn.addEventListener('click', convertText);
     downloadBtn.addEventListener('click', downloadAudio);
     voiceGroupSelect.addEventListener('change', populateVoiceSelect);
+    
+    // Add animation on scroll
+    window.addEventListener('scroll', animateOnScroll);
+    
+    // Initially trigger scroll animation
+    setTimeout(animateOnScroll, 500);
+    
+    // Function to animate elements on scroll
+    function animateOnScroll() {
+        const animatedElements = document.querySelectorAll('.card');
+        
+        animatedElements.forEach(element => {
+            const elementPosition = element.getBoundingClientRect().top;
+            const screenPosition = window.innerHeight / 1.3;
+            
+            if (elementPosition < screenPosition) {
+                element.style.opacity = '1';
+                element.style.transform = 'translateY(0)';
+            }
+        });
+    }
     
     // Function to animate hero section
     function animateHero() {
