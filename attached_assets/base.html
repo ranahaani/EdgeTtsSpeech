@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpeechDaddy - Free Text to Speech Converter with Natural Voices</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Transform text into natural speech with SpeechDaddy's free text-to-speech converter. Choose from multiple languages and voices, no sign-up required. Download MP3 instantly.">
+    <meta name="keywords" content="text to speech, tts, voice generator, speech synthesis, text to audio, multilingual tts, free tts">
+    <meta name="author" content="SpeechDaddy">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://speechdaddy.com/">
+    <meta property="og:title" content="SpeechDaddy - Free Text to Speech Converter">
+    <meta property="og:description" content="Convert text to natural speech in multiple languages. No sign-up required, instant MP3 download.">
+    <meta property="og:image" content="https://speechdaddy.com/static/img/og-image.jpg">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://speechdaddy.com/">
+    <meta property="twitter:title" content="SpeechDaddy - Free Text to Speech Converter">
+    <meta property="twitter:description" content="Convert text to natural speech in multiple languages. No sign-up required, instant MP3 download.">
+    <meta property="twitter:image" content="https://speechdaddy.com/static/img/og-image.jpg">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://speechdaddy.com/">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "SpeechDaddy",
+        "url": "https://speechdaddy.com",
+        "description": "Free text-to-speech converter with natural voices in multiple languages",
+        "applicationCategory": "Multimedia",
+        "operatingSystem": "Web",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "featureList": [
+            "Multiple languages supported",
+            "Natural voice synthesis",
+            "No registration required",
+            "Instant MP3 download",
+            "Multilingual voices available",
+            "Commercial use allowed"
+        ]
+    }
+    </script>
+
+    {% load static %}
+    {% load compress %}
+    
+    <!-- Space Grotesk Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="{% static 'css/output.css' %}">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        :root {
+            --primary-color: #3b82f6; /* blue-500 */
+            --primary-hover: #2563eb; /* blue-600 */
+            --secondary-color: #1e293b; /* slate-800 */
+            --text-primary: #1e293b; /* slate-800 */
+            --text-secondary: #64748b; /* slate-500 */
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc; /* slate-50 */
+            --bg-tertiary: #f1f5f9; /* slate-100 */
+            --border-color: #e2e8f0; /* slate-200 */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --container-padding: 1.5rem;
+            --section-spacing: 4rem;
+            --card-spacing: 1.5rem;
+        }
+        
+        body {
+            font-family: 'Space Grotesk', system-ui, sans-serif;
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+        
+        .bg-hero-gradient {
+            background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at bottom right, rgba(0, 0, 0, 0.05) 0%, transparent 50%);
+            background-color: var(--bg-secondary);
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+            100% {
+                transform: translateY(0px);
+            }
+        }
+        
+        @keyframes expandRight {
+            0% {
+                transform: scaleX(0);
+            }
+            100% {
+                transform: scaleX(1);
+            }
+        }
+
+        .voice-preview-card:nth-child(1) { animation: float 4s ease-in-out infinite; }
+        .voice-preview-card:nth-child(2) { animation: float 4.5s ease-in-out infinite; }
+        .voice-preview-card:nth-child(3) { animation: float 5s ease-in-out infinite; }
+        .voice-preview-card:nth-child(4) { animation: float 5.5s ease-in-out infinite; }
+        
+        /* Consistent spacing */
+        .container {
+            padding-left: var(--container-padding);
+            padding-right: var(--container-padding);
+        }
+        
+        section {
+            margin-bottom: var(--section-spacing);
+        }
+        
+        /* Card styling consistency */
+        .card {
+            background-color: var(--bg-primary);
+            border-radius: 0.75rem;
+            box-shadow: var(--shadow);
+            padding: var(--card-spacing);
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-50">
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-white border-b">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <i data-lucide="headphones" class="w-8 h-8 text-blue-600"></i>
+                    <span class="text-xl font-bold">SpeechDaddy</span>
+                </div>
+                
+                <!-- Desktop Navigation -->
+                <div class="hidden lg:flex items-center space-x-8">
+                    <a href="/" class="hover:text-blue-600 transition-colors">Home</a>
+                    <a href="/#features" class="hover:text-blue-600 transition-colors">Features</a>
+                    <a href="/#pricing" class="hover:text-blue-600 transition-colors">Pricing</a>
+                    <a href="/contact" class="hover:text-blue-600 transition-colors">Contact</a>
+                    <div class="flex items-center space-x-4">
+                        <a href="https://github.com/edge-tts" target="_blank" class="hover:text-blue-600 transition-colors">
+                            <i data-lucide="github" class="w-5 h-5"></i>
+                        </a>
+                        <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                            Try Now
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button id="menu-button" class="lg:hidden">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+
+            <!-- Mobile Navigation -->
+            <div id="mobile-menu" class="hidden lg:hidden mt-4 pb-4">
+                <div class="flex flex-col space-y-4">
+                    <a href="/" class="hover:text-blue-600 transition-colors">Home</a>
+                    <a href="/#features" class="hover:text-blue-600 transition-colors">Features</a>
+                    <a href="/#pricing" class="hover:text-blue-600 transition-colors">Pricing</a>
+                    <a href="/contact" class="hover:text-blue-600 transition-colors">Contact</a>
+                    <a href="https://github.com/edge-tts" target="_blank" class="hover:text-blue-600 transition-colors flex items-center space-x-2">
+                        <i data-lucide="github" class="w-5 h-5"></i>
+                        <span>GitHub</span>
+                    </a>
+                    <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors w-full">
+                        Try Now
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    {% block content %}{% endblock %}
+
+    <footer class="bg-gradient-to-b from-gray-50 to-gray-100 pt-16 pb-10 relative overflow-hidden">
+        <!-- Background Pattern Elements -->
+        <div class="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none">
+            <div class="absolute top-10 left-10 w-40 h-40 rounded-full bg-blue-600"></div>
+            <div class="absolute bottom-10 right-10 w-60 h-60 rounded-full bg-blue-400"></div>
+            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full bg-blue-300 opacity-20"></div>
+        </div>
+        
+        <div class="container mx-auto px-6 relative z-10">
+            <!-- Top Footer Section -->
+            <div class="flex flex-col lg:flex-row gap-12 mb-12">
+                <!-- Company Info -->
+                <div class="lg:w-1/3">
+                    <div class="flex items-center space-x-3 mb-5">
+                        <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-md">
+                            <i data-lucide="headphones" class="w-6 h-6 text-white"></i>
+                        </div>
+                        <span class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-blue-400">SpeechDaddy</span>
+                    </div>
+                    
+                    <p class="text-gray-600 mb-6 text-base leading-relaxed">Transform text into natural speech with our AI-powered voices. Experience the future of text-to-speech technology without registration.</p>
+                    
+                    <!-- Contact Info -->
+                    <div class="space-y-3">
+                        <div class="flex items-center space-x-3 text-gray-600 hover:text-blue-600 transition-colors">
+                            <div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center">
+                                <i data-lucide="mail" class="w-4 h-4 text-blue-600"></i>
+                            </div>
+                            <a href="mailto:hello@speechdaddy.com">hello@speechdaddy.com</a>
+                        </div>
+                        <div class="flex items-center space-x-3 text-gray-600">
+                            <div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center">
+                                <i data-lucide="map-pin" class="w-4 h-4 text-blue-600"></i>
+                            </div>
+                            <span>123 Innovation Street, San Francisco, CA</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="lg:w-2/3">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                        <!-- Product Links -->
+                        <div class="space-y-4">
+                            <h3 class="text-lg font-bold text-gray-900 pb-2 border-b border-blue-100 inline-block">Product</h3>
+                            <ul class="space-y-3">
+                                <li>
+                                    <a href="/#features" class="text-gray-600 hover:text-blue-600 transition-colors flex items-center space-x-2 group">
+                                        <i data-lucide="chevron-right" class="w-4 h-4 text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                                        <span>Features</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/#pricing" class="text-gray-600 hover:text-blue-600 transition-colors flex items-center space-x-2 group">
+                                        <i data-lucide="chevron-right" class="w-4 h-4 text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                                        <span>Pricing</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/docs" class="text-gray-600 hover:text-blue-600 transition-colors flex items-center space-x-2 group">
+                                        <i data-lucide="chevron-right" class="w-4 h-4 text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                                        <span>Documentation</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Legal Links -->
+                        <div class="space-y-4">
+                            <h3 class="text-lg font-bold text-gray-900 pb-2 border-b border-blue-100 inline-block">Legal</h3>
+                            <ul class="space-y-3">
+                                <li>
+                                    <a href="/privacy" class="text-gray-600 hover:text-blue-600 transition-colors flex items-center space-x-2 group">
+                                        <i data-lucide="chevron-right" class="w-4 h-4 text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                                        <span>Privacy Policy</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/terms" class="text-gray-600 hover:text-blue-600 transition-colors flex items-center space-x-2 group">
+                                        <i data-lucide="chevron-right" class="w-4 h-4 text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                                        <span>Terms of Service</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <!-- Social Media Icons -->
+                    <div class="mt-8">
+                        <h3 class="text-lg font-bold text-gray-900 mb-4">Connect With Us</h3>
+                        <div class="flex flex-wrap gap-3">
+                            <a href="#" class="w-10 h-10 bg-white shadow-sm rounded-full flex items-center justify-center text-gray-600 hover:bg-blue-600 hover:text-white transition-all duration-300">
+                                <i data-lucide="facebook" class="w-4 h-4"></i>
+                            </a>
+                            <a href="#" class="w-10 h-10 bg-white shadow-sm rounded-full flex items-center justify-center text-gray-600 hover:bg-blue-400 hover:text-white transition-all duration-300">
+                                <i data-lucide="twitter" class="w-4 h-4"></i>
+                            </a>
+                            <a href="https://github.com/edge-tts" target="_blank" class="w-10 h-10 bg-white shadow-sm rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-800 hover:text-white transition-all duration-300">
+                                <i data-lucide="github" class="w-4 h-4"></i>
+                            </a>
+                            <a href="#" class="w-10 h-10 bg-white shadow-sm rounded-full flex items-center justify-center text-gray-600 hover:bg-blue-700 hover:text-white transition-all duration-300">
+                                <i data-lucide="linkedin" class="w-4 h-4"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Divider with Gradient -->
+            <div class="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent mb-6"></div>
+
+            <!-- Bottom Footer -->
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                
+            </div>
+        </div>
+    </footer>
+
+    <!-- Mobile Menu Toggle Script -->
+    <script>
+        document.getElementById('menu-button').addEventListener('click', function() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        });
+    </script>
+
+    <!-- Initialize Lucide icons -->
+    <script>
+        lucide.createIcons();
+    </script>
+    
+    <!-- Custom JS -->
+    {% compress js %}
+    <script src="{% static 'js/main.js' %}"></script>
+    {% endcompress %}
+
+    <script>
+        function scrollToConverter() {
+            const converter = document.querySelector('#converter');
+            if (converter) {
+                converter.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function watchDemo() {
+            // You can customize this function to show a demo video or tutorial
+            alert('Demo feature coming soon!');
+        }
+    </script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edge TTS Converter</title>
+    <title>Speech Daddy - Text to Speech Converter</title>
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
@@ -25,8 +25,8 @@
         <div class="container">
             <nav class="navbar py-4">
                 <a href="/" class="brand">
-                    <i class="fas fa-waveform-path"></i>
-                    <span>Edge Voice</span>
+                    <i class="fas fa-microphone"></i>
+                    <span>Speech Daddy</span>
                 </a>
                 <div class="nav-links">
                     <a href="#features" class="nav-link">Features</a>
@@ -46,7 +46,8 @@
         <!-- Hero Section -->
         <section class="hero-section">
             <div class="container text-center">
-                <h1 class="hero-title">ALL YOUR VOICES IN ONE PLACE</h1>
+                <h1 class="hero-title">ALL YOUR VOICES</h1>
+                <h1 class="hero-title">IN ONE PLACE</h1>
                 <p class="hero-subtitle">Generate lifelike voiceovers with AI-powered text-to-speech technology.</p>
                 <div class="hero-cta-group">
                     <a href="#converter" class="btn-primary">Get Started</a>
@@ -95,7 +96,7 @@
                                 </select>
                             </div>
                             
-                            <div class="control-group">
+                            <div class="control-group hide-on-cards">
                                 <label for="voice-select">
                                     <i class="fas fa-user"></i> Voice
                                 </label>
@@ -104,6 +105,17 @@
                                 </select>
                             </div>
                         </div>
+                        
+                        <!-- Voice Cards Container -->
+                        <div class="voice-cards-container" id="voice-cards-container"></div>
+                        
+                        <!-- Audio Player -->
+                        <div class="audio-player" id="audio-player-container" style="display: none;">
+                            <audio id="audio-player" controls></audio>
+                        </div>
+                        
+                        <!-- Hidden field for download flag -->
+                        <input type="hidden" id="download-flag" name="download" value="false">
                         
                         <div class="actions-row">
                             <div>
@@ -114,9 +126,14 @@
                                     <i class="fas fa-quote-right"></i> Sample
                                 </button>
                             </div>
-                            <button type="submit" id="convert-btn" class="action-btn-primary">
-                                <i class="fas fa-waveform"></i> Generate Speech
-                            </button>
+                            <div class="action-btns-right">
+                                <button type="button" id="play-btn" class="action-btn-secondary">
+                                    <i class="fas fa-play"></i> Play
+                                </button>
+                                <button type="button" id="download-btn" class="action-btn-primary">
+                                    <i class="fas fa-download"></i> Download
+                                </button>
+                            </div>
                         </div>
                         
                         <!-- Spinner for loading state -->
@@ -204,7 +221,7 @@
                 
                 <div class="api-card">
                     <div class="api-content">
-                        <h3>Edge TTS API</h3>
+                        <h3>Speech Daddy API</h3>
                         <p>Add natural-sounding voices to your applications with our simple and powerful API. Perfect for developers building voice-enabled applications, content creators, and businesses.</p>
                         <div class="api-features">
                             <div class="api-feature">
@@ -232,8 +249,8 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-brand">
-                    <i class="fas fa-waveform-path"></i>
-                    <h3>Edge Voice</h3>
+                    <i class="fas fa-microphone"></i>
+                    <h3>Speech Daddy</h3>
                     <p>Powered by Microsoft Edge TTS technology</p>
                 </div>
                 
@@ -262,7 +279,7 @@
             </div>
             
             <div class="footer-bottom">
-                <p>&copy; 2025 Edge Voice. All rights reserved.</p>
+                <p>&copy; 2025 Speech Daddy. All rights reserved.</p>
             </div>
         </div>
     </footer>

@@ -2,30 +2,36 @@ document.addEventListener('DOMContentLoaded', function() {
     // Elements
     const textInput = document.getElementById('text-input');
     const voiceSelect = document.getElementById('voice-select');
-    const convertBtn = document.getElementById('convert-btn');
-    const speakerCardsContainer = document.getElementById('speaker-cards');
     const voiceGroupSelect = document.getElementById('voice-group-select');
+    const voiceCardsContainer = document.getElementById('voice-cards-container');
+    const speakerCardsContainer = document.getElementById('speaker-cards');
     const loadingSpinner = document.getElementById('loading-spinner');
     const conversionAlert = document.getElementById('conversion-alert');
     const characterCount = document.getElementById('character-count');
     const clearTextBtn = document.getElementById('clear-text-btn');
     const sampleTextBtn = document.getElementById('sample-text-btn');
     const tryDemoBtn = document.querySelector('.try-btn');
+    const playBtn = document.getElementById('play-btn');
+    const downloadBtn = document.getElementById('download-btn');
+    const downloadFlag = document.getElementById('download-flag');
+    const audioPlayer = document.getElementById('audio-player');
+    const audioPlayerContainer = document.getElementById('audio-player-container');
+    const ttsForm = document.getElementById('tts-form');
 
     // Variables to store state
     let selectedVoice = '';
     let voices = {};
-    let audioBlob = null;
+    let audioUrl = null;
     
     // Sample texts for various languages
     const sampleTexts = {
-        'en-US': "Welcome to Edge Voice! This sample demonstrates our text-to-speech capabilities with natural-sounding voices.",
-        'es-ES': "¡Bienvenido a Edge Voice! Esta muestra demuestra nuestras capacidades de texto a voz con voces de sonido natural.",
-        'fr-FR': "Bienvenue sur Edge Voice! Cet exemple démontre nos capacités de synthèse vocale avec des voix naturelles.",
-        'de-DE': "Willkommen bei Edge Voice! Dieses Beispiel demonstriert unsere Text-zu-Sprache-Funktionen mit natürlich klingenden Stimmen.",
-        'hi-IN': "एज वॉइस में आपका स्वागत है! यह नमूना प्राकृतिक-ध्वनि वाली आवाज़ों के साथ हमारी टेक्स्ट-टू-स्पीच क्षमताओं को प्रदर्शित करता है।",
-        'ar-SA': "مرحبًا بكم في Edge Voice! توضح هذه العينة قدرات تحويل النص إلى كلام لدينا بأصوات تبدو طبيعية.",
-        'default': "Welcome to Edge Voice! This sample demonstrates our text-to-speech capabilities with natural-sounding voices."
+        'en-US': "Welcome to Speech Daddy! This sample demonstrates our text-to-speech capabilities with natural-sounding voices.",
+        'es-ES': "¡Bienvenido a Speech Daddy! Esta muestra demuestra nuestras capacidades de texto a voz con voces de sonido natural.",
+        'fr-FR': "Bienvenue sur Speech Daddy! Cet exemple démontre nos capacités de synthèse vocale avec des voix naturelles.",
+        'de-DE': "Willkommen bei Speech Daddy! Dieses Beispiel demonstriert unsere Text-zu-Sprache-Funktionen mit natürlich klingenden Stimmen.",
+        'hi-IN': "स्पीच डैडी में आपका स्वागत है! यह नमूना प्राकृतिक-ध्वनि वाली आवाज़ों के साथ हमारी टेक्स्ट-टू-स्पीच क्षमताओं को प्रदर्शित करता है।",
+        'ar-SA': "مرحبًا بكم في Speech Daddy! توضح هذه العينة قدرات تحويل النص إلى كلام لدينا بأصوات تبدو طبيعية.",
+        'default': "Welcome to Speech Daddy! This sample demonstrates our text-to-speech capabilities with natural-sounding voices."
     };
 
     // Initialize
@@ -50,16 +56,24 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function setupEventListeners() {
         // Form controls
-        voiceGroupSelect.addEventListener('change', populateVoiceSelect);
+        voiceGroupSelect.addEventListener('change', function() {
+            populateVoiceSelect();
+            populateVoiceCards();
+        });
         textInput.addEventListener('input', updateCharacterCount);
         clearTextBtn.addEventListener('click', clearText);
         sampleTextBtn.addEventListener('click', insertSampleText);
         
-        // Form submission
-        document.getElementById('tts-form').addEventListener('submit', function(e) {
-            if (!validateForm()) {
-                e.preventDefault();
-            }
+        // Play button
+        playBtn.addEventListener('click', function() {
+            downloadFlag.value = 'false';
+            generateAudio();
+        });
+        
+        // Download button
+        downloadBtn.addEventListener('click', function() {
+            downloadFlag.value = 'true';
+            generateAudio();
         });
         
         // Try demo button scrolls to converter section
@@ -87,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function setupScrollAnimations() {
         // Elements to animate on scroll
-        const animatedElements = document.querySelectorAll('.feature-card, .api-card, .converter-card');
+        const animatedElements = document.querySelectorAll('.feature-card, .api-card, .converter-card, .voice-card');
         
         // Initial check for elements in viewport
         checkElementsInViewport(animatedElements);
@@ -132,6 +146,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 voices = data;
                 populateVoiceGroups(data);
                 populateVoiceSelect();
+                populateVoiceCards();
                 createSpeakerCards();
                 showLoading(false);
             })
@@ -163,7 +178,7 @@ document.addEventListener('DOMContentLoaded', function() {
             voices[selectedGroup].forEach(voice => {
                 const option = document.createElement('option');
                 option.value = voice.name;
-                option.textContent = `${voice.display_name} (${voice.gender})`;
+                option.textContent = `${voice.display_name}`;
                 voiceSelect.appendChild(option);
             });
             
@@ -172,6 +187,51 @@ document.addEventListener('DOMContentLoaded', function() {
                 selectedVoice = voices[selectedGroup][0].name;
                 voiceSelect.value = selectedVoice;
             }
+        }
+    }
+
+    // Function to populate voice cards for selection
+    function populateVoiceCards() {
+        const selectedGroup = voiceGroupSelect.value;
+        voiceCardsContainer.innerHTML = '';
+        
+        if (voices[selectedGroup]) {
+            voices[selectedGroup].forEach(voice => {
+                const card = document.createElement('div');
+                card.className = 'voice-selection-card';
+                card.setAttribute('data-voice', voice.name);
+                
+                const shortName = voice.short_name || voice.display_name.split(' ')[0];
+                
+                card.innerHTML = `
+                    <div class="avatar">
+                        <img src="${voice.avatar_url}" alt="${shortName}">
+                    </div>
+                    <h4>${shortName}</h4>
+                    <p>${voice.gender}</p>
+                `;
+                
+                card.addEventListener('click', function() {
+                    // Remove selected class from all cards
+                    document.querySelectorAll('.voice-selection-card').forEach(c => {
+                        c.classList.remove('selected');
+                    });
+                    
+                    // Add selected class to this card
+                    this.classList.add('selected');
+                    
+                    // Update the hidden select
+                    selectedVoice = this.getAttribute('data-voice');
+                    voiceSelect.value = selectedVoice;
+                });
+                
+                voiceCardsContainer.appendChild(card);
+                
+                // Select first card by default
+                if (voice.name === selectedVoice) {
+                    card.classList.add('selected');
+                }
+            });
         }
     }
 
@@ -189,14 +249,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (voices[lang] && voices[lang].length > 0) {
                 // Pick the first voice of each featured language
                 const voice = voices[lang][0];
-                
-                // Get a gender-appropriate icon
-                let genderIcon = 'user';
-                if (voice.gender === 'Female') {
-                    genderIcon = 'female';
-                } else if (voice.gender === 'Male') {
-                    genderIcon = 'male';
-                }
+                const shortName = voice.short_name || voice.display_name.split(' ')[0];
                 
                 const card = document.createElement('div');
                 card.className = 'voice-card';
@@ -204,9 +257,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 card.innerHTML = `
                     <div class="voice-icon">
-                        <i class="fas fa-${genderIcon}"></i>
+                        <img src="${voice.avatar_url}" alt="${shortName}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
                     </div>
-                    <h3>${voice.display_name}</h3>
+                    <h3>${shortName}</h3>
                     <p>${getLanguageName(lang)}</p>
                     <div class="voice-badge">${voice.gender}</div>
                     <button class="voice-btn select-voice-btn" data-voice="${voice.name}">
@@ -244,8 +297,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     setTimeout(() => {
                         voiceGroupSelect.value = voiceLanguage;
                         populateVoiceSelect();
+                        populateVoiceCards();
                         voiceSelect.value = voiceName;
                         selectedVoice = voiceName;
+                        
+                        // Update selected card
+                        document.querySelectorAll('.voice-selection-card').forEach(card => {
+                            if (card.getAttribute('data-voice') === voiceName) {
+                                card.classList.add('selected');
+                            } else {
+                                card.classList.remove('selected');
+                            }
+                        });
                         
                         // Add highlight animation to form
                         const converterCard = document.querySelector('.converter-card');
@@ -258,20 +321,71 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
-
-    // Function to validate form before submission
-    function validateForm() {
+    
+    // Function to generate audio
+    function generateAudio() {
         const text = textInput.value.trim();
-        selectedVoice = voiceSelect.value;
-        
         if (!text) {
-            showAlert('Please enter some text to convert.', 'warning');
-            return false;
+            showAlert('Please enter some text to convert', 'warning');
+            return;
         }
-
-        // The form will handle the submission directly to the server
+        
+        if (!selectedVoice) {
+            showAlert('Please select a voice', 'warning');
+            return;
+        }
+        
         showLoading(true);
-        return true;
+        
+        // Create form data
+        const formData = new FormData(ttsForm);
+        
+        // If it's for playing instead of downloading
+        if (downloadFlag.value === 'false') {
+            // Clear previous audio if it exists
+            if (audioUrl) {
+                URL.revokeObjectURL(audioUrl);
+                audioUrl = null;
+            }
+            
+            fetch('/', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.blob();
+            })
+            .then(blob => {
+                // Create a URL for the blob
+                audioUrl = URL.createObjectURL(blob);
+                
+                // Set the audio source and show the player
+                audioPlayer.src = audioUrl;
+                audioPlayerContainer.style.display = 'flex';
+                
+                // Play the audio
+                audioPlayer.play();
+                
+                showLoading(false);
+                showAlert('Audio generated successfully!', 'success');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showLoading(false);
+                showAlert('Error generating audio: ' + error.message, 'danger');
+            });
+        } else {
+            // For download, submit the form directly
+            ttsForm.submit();
+            
+            // Hide loading after a delay (since we're navigating away)
+            setTimeout(() => {
+                showLoading(false);
+            }, 2000);
+        }
     }
 
     // Helper function to show loading spinner
@@ -366,17 +480,43 @@ document.addEventListener('DOMContentLoaded', function() {
         const languageNames = {
             'en-US': 'English (US)',
             'en-GB': 'English (UK)',
+            'en-AU': 'English (Australia)',
+            'en-CA': 'English (Canada)',
+            'en-IN': 'English (India)',
+            'en-IE': 'English (Ireland)',
             'es-ES': 'Spanish',
+            'es-MX': 'Spanish (Mexico)',
             'fr-FR': 'French',
+            'fr-CA': 'French (Canada)',
             'de-DE': 'German',
             'it-IT': 'Italian',
             'ja-JP': 'Japanese',
             'ko-KR': 'Korean',
             'pt-BR': 'Portuguese (Brazil)',
+            'pt-PT': 'Portuguese',
             'ru-RU': 'Russian',
             'zh-CN': 'Chinese (Simplified)',
+            'zh-TW': 'Chinese (Taiwan)',
+            'zh-HK': 'Chinese (Hong Kong)',
+            'nl-NL': 'Dutch',
+            'nl-BE': 'Dutch (Belgium)',
             'hi-IN': 'Hindi',
             'ar-SA': 'Arabic',
+            'ar-AE': 'Arabic (UAE)',
+            'ar-QA': 'Arabic (Qatar)',
+            'ar-EG': 'Arabic (Egypt)',
+            'da-DK': 'Danish',
+            'fi-FI': 'Finnish',
+            'pl-PL': 'Polish',
+            'sv-SE': 'Swedish',
+            'tr-TR': 'Turkish',
+            'af-ZA': 'Afrikaans',
+            'nb-NO': 'Norwegian',
+            'th-TH': 'Thai',
+            'el-GR': 'Greek',
+            'hu-HU': 'Hungarian',
+            'ro-RO': 'Romanian',
+            'sk-SK': 'Slovak',
             'ur-PK': 'Urdu'
         };
         

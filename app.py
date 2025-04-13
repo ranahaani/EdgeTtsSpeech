@@ -50,6 +50,7 @@ def index():
         try:
             text = request.form.get('text', '')
             voice = request.form.get('voice', 'en-US-AriaNeural')
+            download = request.form.get('download', 'false')
             
             if not text:
                 return jsonify({"error": "Text is required"}), 400
@@ -57,11 +58,11 @@ def index():
             # Convert text to speech
             mp3_data = asyncio.run(text_to_speech(text, voice))
             
-            # Send the audio file directly to the user
+            # Return audio file - for download or playback
             return send_file(
                 mp3_data,
                 mimetype="audio/mpeg",
-                as_attachment=True,
+                as_attachment=download.lower() == 'true',
                 download_name="speech.mp3"
             )
         except Exception as e:
@@ -86,11 +87,29 @@ async def voices():
         language = voice["Locale"]
         if language not in voice_groups:
             voice_groups[language] = []
+        
+        # Extract just the first name from the friendly name
+        full_name = voice["FriendlyName"]
+        # Remove anything in parentheses and split by spaces
+        cleaned_name = full_name.split('(')[0].strip()
+        # Get just the first name (or something close to it)
+        first_name = cleaned_name.split()[-1] if 'Microsoft' in cleaned_name else cleaned_name.split()[0]
+        
+        # Determine avatar color based on gender
+        avatar_color = "0ea5e9" if voice["Gender"] == "Female" else "3b82f6" 
+        if "Child" in full_name or "Kids" in full_name:
+            avatar_color = "8b5cf6"  # Purple for kids/children
+            
+        # Create avatar URL using DiceBear avatars
+        avatar_url = f"https://api.dicebear.com/7.x/micah/svg?seed={voice['ShortName']}&backgroundColor={avatar_color}"
+        
         voice_groups[language].append({
             "name": voice["ShortName"],
             "gender": voice["Gender"],
             "display_name": voice["FriendlyName"],
-            "language": voice["Locale"]
+            "short_name": first_name,
+            "language": voice["Locale"],
+            "avatar_url": avatar_url
         })
     
     return jsonify(voice_groups)

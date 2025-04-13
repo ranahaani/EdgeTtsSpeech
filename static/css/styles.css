@@ -1,16 +1,17 @@
 /* Modern Clean Styles - Inspired by Pixapage */
 :root {
-    /* Color Variables */
-    --primary-color: #3b82f6;
-    --primary-darker: #2563eb;
-    --primary-lighter: #60a5fa;
-    --secondary-color: #10b981;
+    /* Color Variables - Purple/Pink Theme */
+    --primary-color: #8B5CF6; /* Purple */
+    --primary-darker: #6D28D9;
+    --primary-lighter: #A78BFA;
+    --secondary-color: #F472B6; /* Pink */
+    --accent-color: #0EA5E9; /* Blue */
     --text-dark: #1f2937;
     --text-light: #f9fafb;
     --text-muted: #9ca3af;
     --bg-white: #ffffff;
-    --bg-light: #f3f4f6;
-    --bg-dark: #111827;
+    --bg-light: #f7f7ff; /* Light purple tint */
+    --bg-dark: #0f172a;
     --border-color: #e5e7eb;
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
     --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -155,7 +156,7 @@ section {
 /* Hero Section */
 .hero-section {
     padding: 8rem 0 6rem;
-    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    background: linear-gradient(135deg, #f8f0ff 0%, #f0e7ff 100%);
     position: relative;
     overflow: hidden;
 }
@@ -547,6 +548,95 @@ section {
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 2rem;
     margin-top: 2rem;
+}
+
+/* Voice Cards Container for Selection */
+.voice-cards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+.voice-selection-card {
+    background-color: white;
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+    text-align: center;
+    border: 2px solid var(--border-color);
+    cursor: pointer;
+}
+
+.voice-selection-card:hover {
+    border-color: var(--primary-lighter);
+    transform: translateY(-2px);
+}
+
+.voice-selection-card.selected {
+    border-color: var(--primary-color);
+    background-color: rgba(139, 92, 246, 0.05);
+}
+
+.voice-selection-card .avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin: 0 auto 0.5rem;
+    overflow: hidden;
+}
+
+.voice-selection-card .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.voice-selection-card h4 {
+    font-size: 1rem;
+    margin: 0.5rem 0 0.25rem;
+}
+
+.voice-selection-card p {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.hide-on-cards {
+    display: none;
+}
+
+/* Audio Player Styles */
+.audio-player {
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background-color: var(--bg-light);
+    border-radius: var(--radius-md);
+    display: flex;
+    justify-content: center;
+}
+
+audio {
+    width: 100%;
+    max-width: 500px;
+}
+
+audio::-webkit-media-controls-panel {
+    background-color: var(--bg-light);
+}
+
+audio::-webkit-media-controls-play-button,
+audio::-webkit-media-controls-volume-slider-container,
+audio::-webkit-media-controls-volume-slider,
+audio::-webkit-media-controls-timeline {
+    color: var(--primary-color);
+}
+
+.action-btns-right {
+    display: flex;
+    gap: 0.5rem;
 }
 
 .voice-card {

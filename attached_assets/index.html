@@ -1,0 +1,421 @@
+{% extends 'tts/base.html' %}
+{% load static %}
+
+{% block content %}
+<main class="pt-16">
+    <!-- Hero Section with featured voices -->
+    <section class="relative min-h-[80vh] flex items-center overflow-hidden">
+        <!-- Background gradient -->
+        <div class="absolute inset-0 bg-hero-gradient"></div>
+
+        <!-- Content -->
+        <div class="container mx-auto px-4 flex flex-col lg:flex-row items-center gap-12">
+            <!-- Text content -->
+            <div class="flex-1 text-center lg:text-left z-10">
+                <h1 class="text-6xl md:text-7xl font-bold mb-6 tracking-tight">
+                    Text to Speech,<br>
+                    Made Simple
+                </h1>
+                <p class="text-xl mb-8 text-gray-700">Transform your text into natural speech with our AI-powered voices. Free, instant, and no sign-up required.</p>
+                <div class="flex flex-wrap gap-4 justify-center lg:justify-start">
+                    <button onclick="scrollToConverter()" class="bg-black text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-800 transition-colors">
+                        Try Now
+                    </button>
+                    <button onclick="watchDemo()" class="border-2 border-black px-8 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
+                        Watch Demo
+                    </button>
+                </div>
+            </div>
+
+            <!-- Animated speaker cards -->
+            <div class="flex-1 relative">
+                <div class="grid grid-cols-2 gap-4 max-w-lg mx-auto">
+                    {% for voice in featured_voices %}
+                    <div class="voice-preview-card bg-white rounded-lg p-4 shadow-lg transform transition-all duration-500 hover:scale-105">
+                        <div class="flex items-center space-x-3">
+                            <img src="{{ voice.avatar }}" alt="{{ voice.name }}" class="w-12 h-12 rounded-full">
+                            <div>
+                                <h3 class="font-medium">
+                                    {% if "Multilingual" in voice.name %}
+                                    {{ voice.name|cut:"Multilingual" }} - Multilingual
+                                    {% else %}
+                                    {{ voice.name }}
+                                    {% endif %}
+                                </h3>
+                                <p class="text-sm text-gray-500">
+                                    {% if voice.language == "en" %}English
+                                    {% elif voice.language == "es" %}Spanish
+                                    {% elif voice.language == "fr" %}French
+                                    {% elif voice.language == "de" %}German
+                                    {% elif voice.language == "it" %}Italian
+                                    {% elif voice.language == "pt" %}Portuguese
+                                    {% elif voice.language == "ru" %}Russian
+                                    {% elif voice.language == "zh" %}Chinese
+                                    {% elif voice.language == "ja" %}Japanese
+                                    {% elif voice.language == "ko" %}Korean
+                                    {% elif voice.language == "hi" %}Hindi
+                                    {% elif voice.language == "ar" %}Arabic
+                                    {% elif voice.language == "tr" %}Turkish
+                                    {% elif voice.language == "pl" %}Polish
+                                    {% elif voice.language == "nl" %}Dutch
+                                    {% elif voice.language == "cs" %}Czech
+                                    {% elif voice.language == "da" %}Danish
+                                    {% elif voice.language == "fi" %}Finnish
+                                    {% elif voice.language == "el" %}Greek
+                                    {% elif voice.language == "he" %}Hebrew
+                                    {% elif voice.language == "hu" %}Hungarian
+                                    {% elif voice.language == "id" %}Indonesian
+                                    {% elif voice.language == "ms" %}Malay
+                                    {% elif voice.language == "no" %}Norwegian
+                                    {% elif voice.language == "ro" %}Romanian
+                                    {% elif voice.language == "sk" %}Slovak
+                                    {% elif voice.language == "sv" %}Swedish
+                                    {% elif voice.language == "th" %}Thai
+                                    {% elif voice.language == "uk" %}Ukrainian
+                                    {% elif voice.language == "vi" %}Vietnamese
+                                    {% elif voice.language == "ur" %}Urdu
+                                    {% else %} English
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="mt-3 flex flex-wrap gap-2">
+                            {% for trait in voice.traits|slice:":2" %}
+                            <span class="text-xs bg-gray-100 px-2 py-1 rounded">{{ trait }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Converter Section -->
+    <section id="converter" class="py-16">
+        <div class="container mx-auto px-4">
+            <div class="max-w-4xl mx-auto">
+                <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+                    <!-- Text Input -->
+                    <div class="mb-8">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Enter Text</label>
+                        <div class="relative">
+                            <textarea id="text-input" rows="6" 
+                                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 pr-24 p-4 text-base"
+                                    placeholder="Type or paste your text here..."
+                                    maxlength="5000">Hello! I'm excited to try out this amazing text-to-speech service.</textarea>
+                            <div class="absolute right-4 bottom-4 flex items-center space-x-2">
+                                <button id="clear-btn" class="text-gray-400 hover:text-gray-600">
+                                    <i data-lucide="x" class="w-4 h-4"></i>
+                                </button>
+                                <button id="paste-btn" class="text-gray-400 hover:text-gray-600">
+                                    <i data-lucide="clipboard" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="flex justify-between text-sm text-gray-500 mt-3">
+                            <span id="char-count">0/5000 characters</span>
+                            <span id="duration">Estimated duration: 0s</span>
+                        </div>
+                    </div>
+
+                    <!-- Voice Selection Controls -->
+                    <div class="flex items-center justify-between mb-6">
+                        <!-- Language Selection -->
+                        <div class="w-64">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Select Language</label>
+                            <div class="relative">
+                                <select id="language-select" 
+                                        class="w-full appearance-none bg-white rounded-lg border-2 border-gray-200 px-4 py-2 pr-10 focus:outline-none focus:border-blue-500 focus:ring-0 cursor-pointer text-gray-700">
+                                    <option value="all">All Languages</option>
+                                    {% for language in languages %}
+                                    {% if language != "all" %}
+                                    <option value="{{ language }}">
+                                        {% if language == "multilingual" %}
+                                        Multilingual Voices
+                                        {% else %}
+                                        {{ language|upper }}
+                                        {% endif %}
+                                    </option>
+                                    {% endif %}
+                                    {% endfor %}
+                                </select>
+                                <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                                    <i data-lucide="chevron-down" class="w-5 h-5 text-gray-500"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Search Box (Optional) -->
+                        <div class="w-64">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Search Voice</label>
+                            <div class="relative">
+                                <input type="text" 
+                                       id="voice-search" 
+                                       class="w-full rounded-lg border-2 border-gray-200 pl-10 pr-4 py-2 focus:outline-none focus:border-blue-500 focus:ring-0"
+                                       placeholder="Search by name...">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i data-lucide="search" class="w-5 h-5 text-gray-400"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Voice Selection -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Select Voice</label>
+                        <div class="relative">
+                            <div class="flex overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+                                <div class="flex gap-4">
+                                    {% for voice in voices %}
+                                    <div class="voice-card flex-shrink-0 w-64 cursor-pointer p-4 rounded-lg border-2 border-gray-200 hover:border-gray-400 hover:shadow-md transition-all"
+                                         data-voice-id="{{ voice.short_name }}"
+                                         data-language="{{ voice.language }}"
+                                         data-base-name="{{ voice.voice_base_name }}">
+                                        <div class="flex items-center space-x-3 mb-2">
+                                            <img src="{{ voice.avatar }}" alt="{{ voice.name }}" class="w-10 h-10 rounded-full">
+                                            <div>
+                                                <h3 class="font-medium">
+                                                    {% if "Multilingual" in voice.name %}
+                                                    {{ voice.name|cut:"Multilingual" }} - Multilingual
+                                                    {% else %}
+                                                    {{ voice.name }}
+                                                    {% endif %}
+                                                </h3>
+                                                <p class="text-sm text-gray-500">
+                                                    {% if voice.language == "en" %}English
+                                                    {% elif voice.language == "es" %}Spanish
+                                                    {% elif voice.language == "fr" %}French
+                                                    {% elif voice.language == "de" %}German
+                                                    {% elif voice.language == "it" %}Italian
+                                                    {% elif voice.language == "pt" %}Portuguese
+                                                    {% elif voice.language == "ru" %}Russian
+                                                    {% elif voice.language == "zh" %}Chinese
+                                                    {% elif voice.language == "ja" %}Japanese
+                                                    {% elif voice.language == "ko" %}Korean
+                                                    {% elif voice.language == "hi" %}Hindi
+                                                    {% elif voice.language == "ar" %}Arabic
+                                                    {% elif voice.language == "tr" %}Turkish
+                                                    {% elif voice.language == "pl" %}Polish
+                                                    {% elif voice.language == "nl" %}Dutch
+                                                    {% elif voice.language == "cs" %}Czech
+                                                    {% elif voice.language == "da" %}Danish
+                                                    {% elif voice.language == "fi" %}Finnish
+                                                    {% elif voice.language == "el" %}Greek
+                                                    {% elif voice.language == "he" %}Hebrew
+                                                    {% elif voice.language == "hu" %}Hungarian
+                                                    {% elif voice.language == "id" %}Indonesian
+                                                    {% elif voice.language == "ms" %}Malay
+                                                    {% elif voice.language == "no" %}Norwegian
+                                                    {% elif voice.language == "ro" %}Romanian
+                                                    {% elif voice.language == "sk" %}Slovak
+                                                    {% elif voice.language == "sv" %}Swedish
+                                                    {% elif voice.language == "th" %}Thai
+                                                    {% elif voice.language == "uk" %}Ukrainian
+                                                    {% elif voice.language == "vi" %}Vietnamese
+                                                    {% elif voice.language == "ur" %}Urdu
+                                                    {% else %}{{ voice.language|upper }}
+                                                    {% endif %}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="flex flex-wrap gap-2">
+                                            {% for trait in voice.traits %}
+                                            <span class="text-xs bg-gray-100 px-2 py-1 rounded">{{ trait }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="absolute right-0 top-1/2 -translate-y-1/2 flex space-x-2">
+                                <button class="scroll-left p-2 rounded-full bg-white shadow-md hover:bg-gray-50">
+                                    <i data-lucide="chevron-left" class="w-5 h-5"></i>
+                                </button>
+                                <button class="scroll-right p-2 rounded-full bg-white shadow-md hover:bg-gray-50">
+                                    <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex flex-wrap gap-4">
+                        <button id="play-btn" 
+                                class="flex items-center space-x-2 bg-black text-white px-6 py-2 rounded-lg font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                            <i data-lucide="play" class="w-5 h-5"></i>
+                            <span>Generate & Play</span>
+                        </button>
+                        <button id="download-btn"
+                                class="flex items-center space-x-2 border-2 border-black px-6 py-2 rounded-lg font-medium hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                            <i data-lucide="download" class="w-5 h-5"></i>
+                            <span>Download MP3</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 bg-gray-50 overflow-hidden relative">
+        <!-- Subtle background elements -->
+        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-100 to-indigo-100"></div>
+        
+        <div class="container mx-auto px-6 lg:px-8 relative z-10">
+            <div class="mb-12 text-center">
+                <div class="inline-block mb-3">
+                    <span class="py-1 px-4 bg-blue-50 text-blue-600 text-sm font-medium rounded-md">
+                        Premium Features
+                    </span>
+                </div>
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">
+                    Why Choose <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">SpeechDaddy</span>?
+                </h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Experience the next generation of text-to-speech technology with our powerful features and intuitive interface.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- AI-Powered Voices -->
+                <div class="bg-white p-6 rounded-lg shadow-sm hover:shadow transition-shadow duration-300 border border-gray-100">
+                    <div class="mb-5 flex items-center">
+                        <div class="bg-indigo-50 rounded-lg w-12 h-12 flex items-center justify-center mr-4">
+                            <i data-lucide="brain" class="w-6 h-6 text-indigo-600"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900">
+                            AI-Powered Voices
+                        </h3>
+                    </div>
+                    <p class="text-gray-600 mb-4">
+                        Natural-sounding speech with human-like intonation and emotion.
+                    </p>
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex items-center">
+                            <i data-lucide="check" class="w-4 h-4 text-indigo-600 mr-2"></i>
+                            <span class="text-gray-700">Advanced neural networks</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i data-lucide="check" class="w-4 h-4 text-indigo-600 mr-2"></i>
+                            <span class="text-gray-700">Natural pausing & emphasis</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i data-lucide="check" class="w-4 h-4 text-indigo-600 mr-2"></i>
+                            <span class="text-gray-700">Emotional expression</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Multiple Languages -->
+                <div class="bg-white p-6 rounded-lg shadow-sm hover:shadow transition-shadow duration-300 border border-gray-100">
+                    <div class="mb-5 flex items-center">
+                        <div class="bg-pink-50 rounded-lg w-12 h-12 flex items-center justify-center mr-4">
+                            <i data-lucide="globe-2" class="w-6 h-6 text-pink-600"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900">
+                            Multiple Languages
+                        </h3>
+                    </div>
+                    <p class="text-gray-600 mb-4">
+                        Support for over 30 languages with native accents and voices.
+                    </p>
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex items-center">
+                            <i data-lucide="check" class="w-4 h-4 text-pink-600 mr-2"></i>
+                            <span class="text-gray-700">30+ languages supported</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i data-lucide="check" class="w-4 h-4 text-pink-600 mr-2"></i>
+                            <span class="text-gray-700">Native accents & dialects</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i data-lucide="check" class="w-4 h-4 text-pink-600 mr-2"></i>
+                            <span class="text-gray-700">Multilingual capabilities</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Easy Export -->
+                <div class="bg-white p-6 rounded-lg shadow-sm hover:shadow transition-shadow duration-300 border border-gray-100">
+                    <div class="mb-5 flex items-center">
+                        <div class="bg-teal-50 rounded-lg w-12 h-12 flex items-center justify-center mr-4">
+                            <i data-lucide="download-cloud" class="w-6 h-6 text-teal-600"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900">
+                            Easy Export
+                        </h3>
+                    </div>
+                    <p class="text-gray-600 mb-4">
+                        High-quality audio exports with instant downloads and multiple format options.
+                    </p>
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex items-center">
+                            <i data-lucide="check" class="w-4 h-4 text-teal-600 mr-2"></i>
+                            <span class="text-gray-700">High-quality MP3 format</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i data-lucide="check" class="w-4 h-4 text-teal-600 mr-2"></i>
+                            <span class="text-gray-700">Instant downloads</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i data-lucide="check" class="w-4 h-4 text-teal-600 mr-2"></i>
+                            <span class="text-gray-700">Multiple format options</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Developer Integration -->
+                <div class="bg-white p-6 rounded-lg shadow-sm hover:shadow transition-shadow duration-300 border border-gray-100">
+                    <div class="mb-5 flex items-center">
+                        <div class="bg-orange-50 rounded-lg w-12 h-12 flex items-center justify-center mr-4">
+                            <i data-lucide="code" class="w-6 h-6 text-orange-600"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900">
+                            Developer Tools
+                        </h3>
+                    </div>
+                    <p class="text-gray-600 mb-4">
+                        Comprehensive API access and integration options for developers.
+                    </p>
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex items-center">
+                            <i data-lucide="check" class="w-4 h-4 text-orange-600 mr-2"></i>
+                            <span class="text-gray-700">RESTful API access</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i data-lucide="check" class="w-4 h-4 text-orange-600 mr-2"></i>
+                            <span class="text-gray-700">WebSocket support</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i data-lucide="check" class="w-4 h-4 text-orange-600 mr-2"></i>
+                            <span class="text-gray-700">Detailed documentation</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="max-w-3xl mx-auto">
+                <h2 class="text-3xl font-bold text-center mb-12">Frequently Asked Questions</h2>
+                <div class="space-y-4">
+                    {% for faq in faqs %}
+                    <div class="bg-white rounded-lg shadow">
+                        <button class="faq-question w-full text-left px-6 py-4 font-medium focus:outline-none">
+                            {{ faq.question }}
+                        </button>
+                        <div class="faq-answer px-6 pb-4 hidden">
+                            <p class="text-gray-600">{{ faq.answer }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}
