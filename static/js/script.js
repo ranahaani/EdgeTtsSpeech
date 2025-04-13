@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const textInput = document.getElementById('text-input');
     const voiceSelect = document.getElementById('voice-select');
     const convertBtn = document.getElementById('convert-btn');
-    const downloadBtn = document.getElementById('download-btn');
     const speakerCardsContainer = document.getElementById('speaker-cards');
     const voiceGroupSelect = document.getElementById('voice-group-select');
     const loadingSpinner = document.getElementById('loading-spinner');
@@ -41,8 +40,6 @@ document.addEventListener('DOMContentLoaded', function() {
     fetchVoices();
 
     // Event listeners
-    convertBtn.addEventListener('click', convertText);
-    downloadBtn.addEventListener('click', downloadAudio);
     voiceGroupSelect.addEventListener('change', populateVoiceSelect);
     textInput.addEventListener('input', updateCharacterCount);
     clearTextBtn.addEventListener('click', clearText);
@@ -214,63 +211,29 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Function to convert text to speech
+    // Function to set up form submission
     function convertText() {
         const text = textInput.value.trim();
         selectedVoice = voiceSelect.value;
         
         if (!text) {
             showAlert('Please enter some text to convert.', 'warning');
-            return;
+            return false;
         }
-        
+
+        // The form will handle the submission directly to the server
+        // No AJAX needed in this approach
         showLoading(true);
-        
-        // Prepare form data
-        const formData = new FormData();
-        formData.append('text', text);
-        formData.append('voice', selectedVoice);
-        
-        // Send request to server
-        fetch('/convert', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Server error: ' + response.statusText);
-            }
-            return response.blob();
-        })
-        .then(blob => {
-            audioBlob = blob;
-            showLoading(false);
-            downloadBtn.disabled = false;
-            showAlert('Text converted successfully! Click Download to save the audio.', 'success');
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showLoading(false);
-            showAlert('Error converting text to speech. Please try again.', 'danger');
-        });
+        return true;
     }
 
-    // Function to download the audio
-    function downloadAudio() {
-        if (!audioBlob) {
-            showAlert('No audio available. Please convert text first.', 'warning');
-            return;
+    // Set up the form submission
+    document.getElementById('tts-form').addEventListener('submit', function(e) {
+        // Let convertText function validate the input
+        if (!convertText()) {
+            e.preventDefault(); // Prevent form submission if validation fails
         }
-        
-        const url = URL.createObjectURL(audioBlob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'speech.mp3';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    }
+    });
 
     // Helper function to show loading spinner
     function showLoading(show) {

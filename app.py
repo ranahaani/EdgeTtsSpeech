@@ -26,9 +26,49 @@ async def get_voices():
         return []
 
 
-@app.route('/')
+async def text_to_speech(text, voice="en-US-AriaNeural"):
+    """Convert text to speech using edge-tts"""
+    try:
+        communicate = edge_tts.Communicate(text, voice)
+        byte_stream = BytesIO()
+
+        async for chunk in communicate.stream():
+            if chunk["type"] == "audio":
+                byte_stream.write(chunk["data"])
+
+        byte_stream.seek(0)  # Go to start of BytesIO stream
+        return byte_stream
+    except Exception as e:
+        logger.error(f"Error in text-to-speech conversion: {e}")
+        raise e
+
+
+@app.route('/', methods=['GET', 'POST'])
 def index():
-    """Render the main page of the application"""
+    """Render the main page of the application or process TTS request"""
+    if request.method == 'POST':
+        try:
+            text = request.form.get('text', '')
+            voice = request.form.get('voice', 'en-US-AriaNeural')
+            
+            if not text:
+                return jsonify({"error": "Text is required"}), 400
+            
+            # Convert text to speech
+            mp3_data = asyncio.run(text_to_speech(text, voice))
+            
+            # Send the audio file directly to the user
+            return send_file(
+                mp3_data,
+                mimetype="audio/mpeg",
+                as_attachment=True,
+                download_name="speech.mp3"
+            )
+        except Exception as e:
+            logger.error(f"Error processing text-to-speech request: {e}")
+            return jsonify({"error": str(e)}), 500
+    
+    # GET request - render the template
     return render_template('index.html')
 
 
@@ -56,43 +96,6 @@ async def voices():
     return jsonify(voice_groups)
 
 
-@app.route('/convert', methods=['POST'])
-async def convert():
-    """API endpoint to convert text to speech"""
-    try:
-        text = request.form.get('text', '')
-        voice = request.form.get('voice', 'en-US-ChristopherNeural')
-        
-        if not text:
-            return jsonify({"error": "Text is required"}), 400
-        
-        # Create a BytesIO object to store the audio data
-        audio_data = BytesIO()
-        
-        # Initialize edge-tts
-        communicate = edge_tts.Communicate(text, voice)
-        
-        # Write audio data to the BytesIO object
-        async for chunk in communicate.stream():
-            if chunk["type"] == "audio":
-                audio_data.write(chunk["data"])
-        
-        # Reset the position to the start of the BytesIO object
-        audio_data.seek(0)
-        
-        # Send the audio file directly to the user
-        return send_file(
-            audio_data,
-            mimetype="audio/mpeg",
-            as_attachment=True,
-            download_name="speech.mp3"
-        )
-    
-    except Exception as e:
-        logger.error(f"Error in text-to-speech conversion: {e}")
-        return jsonify({"error": str(e)}), 500
-
-
 # Helper function to run async routes
 def async_route(route_function):
     """Decorator to run async functions in Flask routes"""
@@ -104,7 +107,6 @@ def async_route(route_function):
 
 # Apply async decorator to routes that need it
 app.view_functions['voices'] = async_route(app.view_functions['voices'])
-app.view_functions['convert'] = async_route(app.view_functions['convert'])
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
