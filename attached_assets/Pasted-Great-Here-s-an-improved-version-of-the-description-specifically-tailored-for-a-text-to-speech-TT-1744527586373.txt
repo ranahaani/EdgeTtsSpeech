@@ -1,0 +1,96 @@
+Great! Here’s an improved version of the description, specifically tailored for a text-to-speech (TTS) app, while keeping the clean, elegant style from the screenshot:
+
+⸻
+
+🎨 Design Style & Vision for a TTS App
+	•	Look & Feel: Modern, minimal, futuristic — feels like something built for creators and tech-savvy users.
+	•	Theme: Bright and clean with soft gradients, rounded corners, and subtle shadows. Prioritizes focus and clarity, perfect for an app that handles voice and speech.
+	•	Ideal For: TTS tools, voice synthesis platforms, AI audio editors, podcast voice generation, etc.
+
+⸻
+
+🧱 Website Layout (Customized for TTS)
+
+1. 🔝 Hero Section
+	•	Headline:
+“ALL YOUR VOICES IN ONE PLACE”
+(or something like “Turn Text Into Voice With One Click”)
+	•	Subheading:
+Clear one-liner about what your app does — e.g.,
+“Generate lifelike voiceovers with AI-powered text-to-speech.”
+	•	CTA Buttons:
+	•	“Try Demo”
+	•	“Get Started”
+	•	Optional Visual:
+Animated waveform, play button mockup, or a device screen showing a sample voice playing.
+
+⸻
+
+2. 🧪 Live TTS Demo / Player Interface
+	•	A mockup player showing:
+	•	Text input field.
+	•	Dropdown to select voice (e.g., “Emma (UK)”, “John (US)”).
+	•	Play/Pause button with animated waveform.
+	•	Add a toggle for “Speed”, “Pitch”, and “Tone” adjustments.
+
+⸻
+
+3. 🚀 Build Your Own Voice App (API Offering)
+	•	Title:
+“Build Your Own Voice Experiences”
+	•	Description:
+Highlight your API offering — easy to integrate, developer-friendly docs, high-quality voices.
+	•	Call-to-action: “Explore API”
+
+⸻
+
+4. 💡 Key Features Section
+	•	Examples:
+	•	🎙️ Lifelike Voices – Natural and expressive AI speech.
+	•	🌎 Multi-language Support – Speak in over 30+ languages.
+	•	🛠️ Voice Customization – Adjust pitch, speed, and emotion.
+	•	⏱️ Fast & Scalable – Generate audio in seconds.
+
+⸻
+
+5. 🔧 Additional Tools / Editor Preview
+	•	Cards or mockups showing:
+	•	A waveform audio editor.
+	•	Text segmentation for different voices.
+	•	Download/Export options (MP3, WAV).
+
+⸻
+
+6. 💳 Pricing Plans
+	•	Section Title: “One Subscription for Everything”
+	•	Simple card with pricing tiers:
+	•	Free Tier (limited characters/minutes)
+	•	Pro Tier ($17/month or custom pricing)
+	•	CTA: “Start Free Trial”
+
+⸻
+
+7. 🎨 Gallery of Voice Demos
+	•	Voice avatars or cards with:
+	•	Voice name
+	•	Accent
+	•	Small play button
+	•	Examples like:
+“Sophie – British”, “Leo – American”, “Aiko – Japanese”
+
+⸻
+
+8. 📬 Newsletter Signup / Updates
+	•	Encourage users to get updates on new voices or features.
+
+⸻
+
+9. ⚡ Footer
+	•	Light and simple with:
+	•	Product links: Features, Pricing, API, Demos
+	•	Company info: About, Contact, Blog
+	•	Legal: Privacy, Terms
+
+⸻
+
+Would you like help turning this into a Figma wireframe, HTML/Tailwind template, or a Notion-style design doc for dev handoff?

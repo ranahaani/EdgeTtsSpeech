@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="dark">
+<html lang="en" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,178 +11,258 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
     <!-- Header Section -->
-    <header class="py-3 mb-4 border-bottom">
-        <div class="container d-flex align-items-center justify-content-between">
-            <a href="/" class="d-flex align-items-center text-decoration-none">
-                <i class="fas fa-microphone-alt text-info fs-3 me-2"></i>
-                <span class="fs-4 fw-bold">Edge TTS <span class="text-info">Converter</span></span>
-            </a>
-            <div class="d-flex align-items-center">
-                <button class="btn btn-outline-light btn-sm rounded-pill px-3 border-0" disabled>
-                    <i class="fas fa-volume-up me-2"></i>Text to Speech
+    <header class="header">
+        <div class="container">
+            <nav class="navbar py-4">
+                <a href="/" class="brand">
+                    <i class="fas fa-waveform-path"></i>
+                    <span>Edge Voice</span>
+                </a>
+                <div class="nav-links">
+                    <a href="#features" class="nav-link">Features</a>
+                    <a href="#voices" class="nav-link">Voices</a>
+                    <a href="#about" class="nav-link">API</a>
+                </div>
+                <button class="try-btn">
+                    Try Demo 
+                    <i class="fas fa-arrow-right ms-2"></i>
                 </button>
-            </div>
+            </nav>
         </div>
     </header>
 
     <!-- Main Content -->
-    <main class="container">
+    <main>
         <!-- Hero Section -->
-        <section class="hero rounded text-white">
-            <div class="container">
-                <h1><i class="fas fa-volume-up me-2"></i>Text to Speech Converter</h1>
-                <p>Transform your text into natural-sounding speech using Microsoft's Edge TTS technology. Select from multiple voices and languages, then download your MP3 instantly.</p>
+        <section class="hero-section">
+            <div class="container text-center">
+                <h1 class="hero-title">ALL YOUR VOICES IN ONE PLACE</h1>
+                <p class="hero-subtitle">Generate lifelike voiceovers with AI-powered text-to-speech technology.</p>
+                <div class="hero-cta-group">
+                    <a href="#converter" class="btn-primary">Get Started</a>
+                    <a href="#voices" class="btn-secondary">Explore Voices</a>
+                </div>
+                <div class="hero-visual">
+                    <div class="waveform-animation">
+                        <div class="waveform-bar"></div>
+                        <div class="waveform-bar"></div>
+                        <div class="waveform-bar"></div>
+                        <div class="waveform-bar"></div>
+                        <div class="waveform-bar"></div>
+                    </div>
+                </div>
             </div>
         </section>
 
         <!-- Converter Section -->
-        <section class="row">
-            <div class="col-lg-8">
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h4><i class="fas fa-keyboard me-2"></i>Enter Your Text</h4>
-                    </div>
-                    <div class="card-body">
-                        <form id="tts-form" action="/" method="post">
-                            <div class="mb-4">
-                                <label for="text-input" class="form-label">
-                                    <i class="fas fa-pen-fancy me-1"></i> Text to Convert
+        <section id="converter" class="converter-section">
+            <div class="container">
+                <div class="section-header text-center">
+                    <h2>Convert Text to Speech</h2>
+                    <p>Transform your text into natural-sounding speech in seconds</p>
+                </div>
+                
+                <div class="converter-card">
+                    <form id="tts-form" action="/" method="post">
+                        <div class="form-group">
+                            <textarea 
+                                id="text-input" 
+                                name="text" 
+                                class="text-input" 
+                                placeholder="Type or paste your text here..."
+                                rows="6"
+                            ></textarea>
+                            <div class="character-counter" id="character-count">0 characters</div>
+                        </div>
+                        
+                        <div class="controls-row">
+                            <div class="control-group">
+                                <label for="voice-group-select">
+                                    <i class="fas fa-globe"></i> Language
                                 </label>
-                                <div class="position-relative">
-                                    <textarea class="form-control" id="text-input" name="text" rows="8" 
-                                        placeholder="Type or paste the text you want to convert to speech..."></textarea>
-                                    <div class="position-absolute bottom-0 end-0 p-2 text-muted small fw-light character-count" 
-                                        id="character-count">0 characters</div>
-                                </div>
-                                <div class="mt-2 text-end">
-                                    <button type="button" class="btn btn-sm btn-outline-secondary" id="clear-text-btn">
-                                        <i class="fas fa-eraser me-1"></i> Clear
-                                    </button>
-                                    <button type="button" class="btn btn-sm btn-outline-info" id="sample-text-btn">
-                                        <i class="fas fa-quote-right me-1"></i> Insert Sample
-                                    </button>
-                                </div>
+                                <select id="voice-group-select" class="select-control">
+                                    <option value="" selected disabled>Loading languages...</option>
+                                </select>
                             </div>
                             
-                            <div class="row mb-4">
-                                <div class="col-md-6 mb-3 mb-md-0">
-                                    <label for="voice-group-select" class="form-label">
-                                        <i class="fas fa-globe me-1"></i> Language
-                                    </label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-transparent border-end-0">
-                                            <i class="fas fa-language text-info"></i>
-                                        </span>
-                                        <select class="form-select border-start-0" id="voice-group-select">
-                                            <option value="" selected disabled>Loading languages...</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="voice-select" class="form-label">
-                                        <i class="fas fa-user-alt me-1"></i> Voice
-                                    </label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-transparent border-end-0">
-                                            <i class="fas fa-microphone text-info"></i>
-                                        </span>
-                                        <select class="form-select border-start-0" id="voice-select" name="voice">
-                                            <option value="" selected disabled>Select a language first</option>
-                                        </select>
-                                    </div>
-                                </div>
+                            <div class="control-group">
+                                <label for="voice-select">
+                                    <i class="fas fa-user"></i> Voice
+                                </label>
+                                <select id="voice-select" name="voice" class="select-control">
+                                    <option value="" selected disabled>Select a language first</option>
+                                </select>
                             </div>
-                            
-                            <div class="d-grid gap-2 d-md-flex mt-4">
-                                <button type="submit" class="btn btn-primary action-btn" id="convert-btn">
-                                    <i class="fas fa-magic me-2"></i>Convert to Speech
+                        </div>
+                        
+                        <div class="actions-row">
+                            <div>
+                                <button type="button" id="clear-text-btn" class="action-btn-secondary">
+                                    <i class="fas fa-eraser"></i> Clear
+                                </button>
+                                <button type="button" id="sample-text-btn" class="action-btn-secondary">
+                                    <i class="fas fa-quote-right"></i> Sample
                                 </button>
                             </div>
-                        </form>
+                            <button type="submit" id="convert-btn" class="action-btn-primary">
+                                <i class="fas fa-waveform"></i> Generate Speech
+                            </button>
+                        </div>
                         
                         <!-- Spinner for loading state -->
-                        <div class="spinner-wrapper" id="loading-spinner">
-                            <div class="spinner-border text-primary" role="status">
-                                <span class="visually-hidden">Loading...</span>
+                        <div class="loading-indicator" id="loading-spinner">
+                            <div class="spinner">
+                                <div class="bounce1"></div>
+                                <div class="bounce2"></div>
+                                <div class="bounce3"></div>
                             </div>
-                            <p class="mt-2">Processing your request...</p>
+                            <p>Processing your request...</p>
                         </div>
                         
                         <!-- Alert for conversion status -->
-                        <div class="alert" id="conversion-alert" role="alert"></div>
-                    </div>
+                        <div class="status-alert" id="conversion-alert" role="alert"></div>
+                    </form>
                 </div>
             </div>
-            
-            <div class="col-lg-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h4><i class="fas fa-info-circle me-2"></i>About</h4>
+        </section>
+        
+        <!-- Features Section -->
+        <section id="features" class="features-section">
+            <div class="container">
+                <div class="section-header text-center">
+                    <h2>Key Features</h2>
+                    <p>Everything you need to create perfect voiceovers</p>
+                </div>
+                
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-microphone-alt"></i>
+                        </div>
+                        <h3>Lifelike Voices</h3>
+                        <p>Natural and expressive AI speech that sounds human-like</p>
                     </div>
-                    <div class="card-body">
-                        <p>This app uses Microsoft Edge TTS technology to generate natural-sounding speech from text.</p>
-                        <p class="fw-bold text-info mb-2">Features:</p>
-                        <div class="feature-list">
-                            <div class="d-flex align-items-center mb-2">
-                                <div class="feature-icon me-2">
-                                    <i class="fas fa-globe text-info"></i>
-                                </div>
-                                <div>Multiple languages and voices</div>
-                            </div>
-                            <div class="d-flex align-items-center mb-2">
-                                <div class="feature-icon me-2">
-                                    <i class="fas fa-medal text-info"></i>
-                                </div>
-                                <div>High-quality speech synthesis</div>
-                            </div>
-                            <div class="d-flex align-items-center mb-2">
-                                <div class="feature-icon me-2">
-                                    <i class="fas fa-download text-info"></i>
-                                </div>
-                                <div>Direct MP3 downloads</div>
-                            </div>
-                            <div class="d-flex align-items-center mb-2">
-                                <div class="feature-icon me-2">
-                                    <i class="fas fa-shield-alt text-info"></i>
-                                </div>
-                                <div>No storage of your text or audio files</div>
-                            </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-language"></i>
                         </div>
-                        <div class="alert alert-secondary mt-3" role="alert">
-                            <small><i class="fas fa-info-circle me-1"></i> The quality and availability of voices may vary by language.</small>
+                        <h3>Multi-language</h3>
+                        <p>Speak in over 30+ languages and various accents</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-download"></i>
                         </div>
+                        <h3>Instant Download</h3>
+                        <p>Get MP3 files immediately with no waiting time</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h3>Private & Secure</h3>
+                        <p>No storage of your text or generated audio files</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Speaker Cards Section -->
-        <section class="speaker-cards mt-5">
-            <h4 class="mb-4"><i class="fas fa-users me-2"></i>Featured Voices</h4>
-            <div class="row" id="speaker-cards"></div>
+        <!-- Voices Gallery Section -->
+        <section id="voices" class="voices-section">
+            <div class="container">
+                <div class="section-header text-center">
+                    <h2>Featured Voices</h2>
+                    <p>Explore our collection of high-quality voices</p>
+                </div>
+                
+                <div class="voices-grid" id="speaker-cards">
+                    <!-- Voice cards will be dynamically inserted here -->
+                </div>
+            </div>
+        </section>
+        
+        <!-- API Section -->
+        <section id="about" class="api-section">
+            <div class="container">
+                <div class="section-header text-center">
+                    <h2>Build Your Own Voice Experiences</h2>
+                    <p>Integrate our text-to-speech technology into your applications</p>
+                </div>
+                
+                <div class="api-card">
+                    <div class="api-content">
+                        <h3>Edge TTS API</h3>
+                        <p>Add natural-sounding voices to your applications with our simple and powerful API. Perfect for developers building voice-enabled applications, content creators, and businesses.</p>
+                        <div class="api-features">
+                            <div class="api-feature">
+                                <i class="fas fa-check"></i>
+                                <span>Easy integration</span>
+                            </div>
+                            <div class="api-feature">
+                                <i class="fas fa-check"></i>
+                                <span>Developer-friendly documentation</span>
+                            </div>
+                            <div class="api-feature">
+                                <i class="fas fa-check"></i>
+                                <span>High-quality voices</span>
+                            </div>
+                        </div>
+                        <a href="#" class="btn-primary">Explore API</a>
+                    </div>
+                </div>
+            </div>
         </section>
     </main>
 
     <!-- Footer -->
-    <footer class="py-4 mt-5">
+    <footer class="footer">
         <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-6 text-center text-md-start">
-                    <div class="d-flex align-items-center justify-content-center justify-content-md-start">
-                        <i class="fas fa-microphone-alt text-info me-2"></i>
-                        <p class="mb-0 fw-bold">Edge TTS <span class="text-info">Converter</span></p>
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <i class="fas fa-waveform-path"></i>
+                    <h3>Edge Voice</h3>
+                    <p>Powered by Microsoft Edge TTS technology</p>
+                </div>
+                
+                <div class="footer-links">
+                    <div class="footer-group">
+                        <h4>Product</h4>
+                        <a href="#features">Features</a>
+                        <a href="#converter">Converter</a>
+                        <a href="#voices">Voices</a>
+                    </div>
+                    
+                    <div class="footer-group">
+                        <h4>Resources</h4>
+                        <a href="#about">API</a>
+                        <a href="#">Documentation</a>
+                        <a href="#">Support</a>
+                    </div>
+                    
+                    <div class="footer-group">
+                        <h4>Company</h4>
+                        <a href="#">About</a>
+                        <a href="#">Contact</a>
+                        <a href="#">Privacy</a>
                     </div>
                 </div>
-                <div class="col-md-6 text-center text-md-end mt-3 mt-md-0">
-                    <p class="mb-0 text-muted">
-                        <small>Powered by Microsoft Edge TTS | <i class="far fa-copyright"></i> 2025</small>
-                    </p>
-                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 Edge Voice. All rights reserved.</p>
             </div>
         </div>
     </footer>

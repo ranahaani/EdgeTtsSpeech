@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const characterCount = document.getElementById('character-count');
     const clearTextBtn = document.getElementById('clear-text-btn');
     const sampleTextBtn = document.getElementById('sample-text-btn');
+    const tryDemoBtn = document.querySelector('.try-btn');
 
     // Variables to store state
     let selectedVoice = '';
@@ -18,61 +19,108 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Sample texts for various languages
     const sampleTexts = {
-        'en-US': "Welcome to Edge TTS Converter! This is a sample text to demonstrate the text-to-speech capabilities.",
-        'es-ES': "¡Bienvenido al Conversor Edge TTS! Este es un texto de muestra para demostrar las capacidades de texto a voz.",
-        'fr-FR': "Bienvenue sur Edge TTS Converter! Ceci est un exemple de texte pour démontrer les capacités de synthèse vocale.",
-        'de-DE': "Willkommen beim Edge TTS Converter! Dies ist ein Beispieltext, um die Text-to-Speech-Funktionen zu demonstrieren.",
-        'hi-IN': "एज टीटीएस कनवर्टर में आपका स्वागत है! यह टेक्स्ट-टू-स्पीच क्षमताओं को प्रदर्शित करने के लिए एक नमूना पाठ है।",
-        'ar-SA': "مرحبًا بك في محول Edge TTS! هذا نص عينة لإظهار إمكانيات تحويل النص إلى كلام.",
-        'default': "Welcome to Edge TTS Converter! This is a sample text to demonstrate the text-to-speech capabilities."
+        'en-US': "Welcome to Edge Voice! This sample demonstrates our text-to-speech capabilities with natural-sounding voices.",
+        'es-ES': "¡Bienvenido a Edge Voice! Esta muestra demuestra nuestras capacidades de texto a voz con voces de sonido natural.",
+        'fr-FR': "Bienvenue sur Edge Voice! Cet exemple démontre nos capacités de synthèse vocale avec des voix naturelles.",
+        'de-DE': "Willkommen bei Edge Voice! Dieses Beispiel demonstriert unsere Text-zu-Sprache-Funktionen mit natürlich klingenden Stimmen.",
+        'hi-IN': "एज वॉइस में आपका स्वागत है! यह नमूना प्राकृतिक-ध्वनि वाली आवाज़ों के साथ हमारी टेक्स्ट-टू-स्पीच क्षमताओं को प्रदर्शित करता है।",
+        'ar-SA': "مرحبًا بكم في Edge Voice! توضح هذه العينة قدرات تحويل النص إلى كلام لدينا بأصوات تبدو طبيعية.",
+        'default': "Welcome to Edge Voice! This sample demonstrates our text-to-speech capabilities with natural-sounding voices."
     };
 
-    // Add fade-in animation to the entire body
-    document.body.classList.add('fade-in');
-
-    // Animate elements with delay
-    setTimeout(() => {
-        // Animate hero section
-        animateHero();
-    }, 100);
-
-    // Fetch voices
-    fetchVoices();
-
-    // Event listeners
-    voiceGroupSelect.addEventListener('change', populateVoiceSelect);
-    textInput.addEventListener('input', updateCharacterCount);
-    clearTextBtn.addEventListener('click', clearText);
-    sampleTextBtn.addEventListener('click', insertSampleText);
+    // Initialize
+    init();
     
-    // Initialize character count
-    updateCharacterCount();
-    
-    // Add animation on scroll
-    window.addEventListener('scroll', animateOnScroll);
-    
-    // Initially trigger scroll animation
-    setTimeout(animateOnScroll, 500);
-    
-    // Function to animate elements on scroll
-    function animateOnScroll() {
-        const animatedElements = document.querySelectorAll('.card');
+    function init() {
+        // Fetch voices
+        fetchVoices();
         
-        animatedElements.forEach(element => {
-            const elementPosition = element.getBoundingClientRect().top;
-            const screenPosition = window.innerHeight / 1.3;
+        // Set up event listeners
+        setupEventListeners();
+        
+        // Initialize character count
+        updateCharacterCount();
+        
+        // Add scroll animations
+        setupScrollAnimations();
+        
+        // Add waveform animation
+        initWaveformAnimation();
+    }
+    
+    function setupEventListeners() {
+        // Form controls
+        voiceGroupSelect.addEventListener('change', populateVoiceSelect);
+        textInput.addEventListener('input', updateCharacterCount);
+        clearTextBtn.addEventListener('click', clearText);
+        sampleTextBtn.addEventListener('click', insertSampleText);
+        
+        // Form submission
+        document.getElementById('tts-form').addEventListener('submit', function(e) {
+            if (!validateForm()) {
+                e.preventDefault();
+            }
+        });
+        
+        // Try demo button scrolls to converter section
+        if (tryDemoBtn) {
+            tryDemoBtn.addEventListener('click', function() {
+                document.getElementById('converter').scrollIntoView({ 
+                    behavior: 'smooth' 
+                });
+            });
+        }
+        
+        // Add smooth scrolling to all anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    }
+    
+    function setupScrollAnimations() {
+        // Elements to animate on scroll
+        const animatedElements = document.querySelectorAll('.feature-card, .api-card, .converter-card');
+        
+        // Initial check for elements in viewport
+        checkElementsInViewport(animatedElements);
+        
+        // Check on scroll
+        window.addEventListener('scroll', function() {
+            checkElementsInViewport(animatedElements);
+        });
+    }
+    
+    function checkElementsInViewport(elements) {
+        elements.forEach(element => {
+            const rect = element.getBoundingClientRect();
+            const isInViewport = (
+                rect.top <= (window.innerHeight * 0.8) && 
+                rect.bottom >= 0
+            );
             
-            if (elementPosition < screenPosition) {
+            if (isInViewport) {
                 element.style.opacity = '1';
                 element.style.transform = 'translateY(0)';
             }
         });
     }
     
-    // Function to animate hero section
-    function animateHero() {
-        const hero = document.querySelector('.hero');
-        hero.classList.add('animate');
+    function initWaveformAnimation() {
+        // Random animation for waveform bars on hero section
+        const waveformBars = document.querySelectorAll('.waveform-bar');
+        waveformBars.forEach(bar => {
+            // Add random height for more natural look
+            const randomHeight = 30 + Math.random() * 50;
+            bar.style.height = `${randomHeight}px`;
+        });
     }
 
     // Function to fetch voices from the server
@@ -131,18 +179,12 @@ document.addEventListener('DOMContentLoaded', function() {
     function createSpeakerCards() {
         speakerCardsContainer.innerHTML = '';
         
-        // Update the title with a more stylish look
-        const speakerSectionTitle = document.querySelector('.speaker-cards h4');
-        if (speakerSectionTitle) {
-            speakerSectionTitle.className = 'mb-4 speaker-cards-title';
-        }
-        
         // Select a few featured languages with better coverage
         const featuredLanguages = [
             'en-US', 'es-ES', 'fr-FR', 'de-DE', 'hi-IN', 'ar-SA'
         ];
         
-        // Add cards with staggered animation delay
+        // Add cards with staggered animation
         featuredLanguages.forEach((lang, index) => {
             if (voices[lang] && voices[lang].length > 0) {
                 // Pick the first voice of each featured language
@@ -157,27 +199,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 const card = document.createElement('div');
-                card.className = 'col-md-4 mb-4';
-                card.style.transitionDelay = `${index * 0.1}s`;
+                card.className = 'voice-card';
+                card.style.animationDelay = `${index * 0.1}s`;
                 
                 card.innerHTML = `
-                    <div class="card h-100 speaker-card" data-voice="${voice.name}">
-                        <div class="card-header text-center">
-                            <h5 class="card-title mb-0">
-                                <i class="fas fa-${genderIcon} me-2"></i>
-                                ${getLanguageName(lang)}
-                            </h5>
-                        </div>
-                        <div class="card-body text-center">
-                            <p class="card-text">${voice.display_name}</p>
-                            <div class="badge bg-${voice.gender === 'Female' ? 'info' : 'primary'} mb-3">${voice.gender}</div>
-                            <div class="d-grid">
-                                <button class="btn btn-outline-${voice.gender === 'Female' ? 'info' : 'primary'} select-voice-btn">
-                                    <i class="fas fa-headphones me-2"></i>Select Voice
-                                </button>
-                            </div>
-                        </div>
+                    <div class="voice-icon">
+                        <i class="fas fa-${genderIcon}"></i>
                     </div>
+                    <h3>${voice.display_name}</h3>
+                    <p>${getLanguageName(lang)}</p>
+                    <div class="voice-badge">${voice.gender}</div>
+                    <button class="voice-btn select-voice-btn" data-voice="${voice.name}">
+                        <i class="fas fa-headphones"></i> Select Voice
+                    </button>
                 `;
                 
                 speakerCardsContainer.appendChild(card);
@@ -187,8 +221,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add event listeners to speaker cards
         document.querySelectorAll('.select-voice-btn').forEach(btn => {
             btn.addEventListener('click', function() {
-                const card = this.closest('.speaker-card');
-                const voiceName = card.dataset.voice;
+                const voiceName = this.getAttribute('data-voice');
                 
                 // Find the language of this voice
                 let voiceLanguage = '';
@@ -202,17 +235,32 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Set the voice group and voice select values
                 if (voiceLanguage) {
-                    voiceGroupSelect.value = voiceLanguage;
-                    populateVoiceSelect();
-                    voiceSelect.value = voiceName;
-                    selectedVoice = voiceName;
+                    // Scroll to converter section
+                    document.getElementById('converter').scrollIntoView({ 
+                        behavior: 'smooth' 
+                    });
+                    
+                    // After scrolling, set the values with a small delay
+                    setTimeout(() => {
+                        voiceGroupSelect.value = voiceLanguage;
+                        populateVoiceSelect();
+                        voiceSelect.value = voiceName;
+                        selectedVoice = voiceName;
+                        
+                        // Add highlight animation to form
+                        const converterCard = document.querySelector('.converter-card');
+                        converterCard.classList.add('pulse');
+                        setTimeout(() => {
+                            converterCard.classList.remove('pulse');
+                        }, 500);
+                    }, 600);
                 }
             });
         });
     }
 
-    // Function to set up form submission
-    function convertText() {
+    // Function to validate form before submission
+    function validateForm() {
         const text = textInput.value.trim();
         selectedVoice = voiceSelect.value;
         
@@ -222,23 +270,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // The form will handle the submission directly to the server
-        // No AJAX needed in this approach
         showLoading(true);
         return true;
     }
 
-    // Set up the form submission
-    document.getElementById('tts-form').addEventListener('submit', function(e) {
-        // Let convertText function validate the input
-        if (!convertText()) {
-            e.preventDefault(); // Prevent form submission if validation fails
-        }
-    });
-
     // Helper function to show loading spinner
     function showLoading(show) {
         if (show) {
-            loadingSpinner.style.display = 'block';
+            loadingSpinner.style.display = 'flex';
             loadingSpinner.style.opacity = '0';
             setTimeout(() => {
                 loadingSpinner.style.opacity = '1';
@@ -254,7 +293,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Helper function to show alerts
     function showAlert(message, type) {
         conversionAlert.textContent = message;
-        conversionAlert.className = `alert alert-${type} mt-3`;
+        conversionAlert.className = `status-alert alert-${type}`;
         conversionAlert.style.display = 'block';
         
         // Add show-alert class for animation
@@ -278,10 +317,10 @@ document.addEventListener('DOMContentLoaded', function() {
         characterCount.textContent = `${count} character${count !== 1 ? 's' : ''}`;
         
         // Change color based on length
-        if (count > 500) {
-            characterCount.style.color = 'var(--bs-warning)';
-        } else if (count > 1000) {
-            characterCount.style.color = 'var(--bs-danger)';
+        if (count > 1000) {
+            characterCount.style.color = '#ef4444';
+        } else if (count > 500) {
+            characterCount.style.color = '#f59e0b';
         } else {
             characterCount.style.color = '';
         }
@@ -291,6 +330,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function clearText() {
         textInput.value = '';
         updateCharacterCount();
+        
         // Add a small animation to the button
         clearTextBtn.classList.add('active');
         setTimeout(() => {
