@@ -7,9 +7,12 @@ import uuid
 import requests
 from io import BytesIO
 from collections import OrderedDict
-from flask import Flask, render_template, request, send_file, jsonify, session, Response
+from flask import Flask, render_template, request, send_file, jsonify, session, Response, redirect, url_for
 from flask_session import Session
 from flask_session_captcha import FlaskSessionCaptcha
+import tempfile
+from datetime import datetime
+import json
 
 # Configure logging
 is_production = os.environ.get("FLASK_ENV") == "production"
@@ -19,9 +22,9 @@ logger = logging.getLogger(__name__)
 
 # Create Flask app
 app = Flask(__name__)
-app.secret_key = os.environ.get("SESSION_SECRET", "edge-tts-secret-key")
+app.secret_key = os.environ.get("SESSION_SECRET", "edge-tts-secret-key-fallback")
 
-# Session configuration
+# Session configuration - simplified for production
 session_dir = os.environ.get("SESSION_DIR", "flask_session")
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SESSION_FILE_DIR'] = session_dir
@@ -30,7 +33,18 @@ app.config['SESSION_USE_SIGNER'] = True
 app.config['SESSION_KEY_PREFIX'] = 'tts:'
 
 # Ensure session directory exists
-os.makedirs(session_dir, exist_ok=True)
+try:
+    os.makedirs(session_dir, exist_ok=True)
+    logger.info(f"Session directory created/verified: {session_dir}")
+except Exception as e:
+    logger.warning(f"Could not create session directory: {e}")
+
+# Initialize session
+try:
+    Session(app)
+    logger.info("Flask session initialized successfully")
+except Exception as e:
+    logger.error(f"Failed to initialize session: {e}")
 
 # Captcha configuration
 app.config['CAPTCHA_ENABLE'] = True
@@ -43,7 +57,6 @@ app.config['CAPTCHA_INCLUDE_PUNCTUATION'] = False
 app.config['CAPTCHA_SESSION_KEY'] = 'captcha_image'
 
 # Initialize session and captcha
-Session(app)
 captcha = FlaskSessionCaptcha(app)
 
 # Cache for storing the list of voices
