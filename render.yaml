@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: speechdaddy
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --config gunicorn.conf.py app:app
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: PYTHONPATH
+        value: .
+    healthCheckPath: /health 
