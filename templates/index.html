@@ -1,293 +1,302 @@
-<!DOCTYPE html>
-<html lang="en" data-bs-theme="light">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Speech Daddy - Text to Speech Converter</title>
-    
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
-    
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-</head>
-<body>
-    <!-- Header Section -->
-    <header class="header">
-        <div class="container">
-            <nav class="navbar py-4">
-                <a href="/" class="brand">
-                    <i class="fas fa-microphone"></i>
-                    <span>Speech Daddy</span>
-                </a>
-                <div class="nav-links">
-                    <a href="#features" class="nav-link">Features</a>
-                    <a href="#voices" class="nav-link">Voices</a>
-                    <a href="#about" class="nav-link">API</a>
+{% extends 'base.html' %}
+
+{% block content %}
+<main class="pt-20">
+    <!-- Hero Section with featured voices -->
+    <section class="relative min-h-[80vh] flex items-center overflow-hidden">
+        <!-- Background gradient -->
+        <div class="absolute inset-0 bg-hero-gradient"></div>
+
+        <!-- Content -->
+        <div class="container mx-auto px-4 flex flex-col lg:flex-row items-center gap-12">
+            <!-- Text content -->
+            <div class="flex-1 text-center lg:text-left z-10">
+                <h1 class="text-6xl md:text-7xl font-bold mb-6 tracking-tight">
+                    ALL YOUR VOICES<br>
+                    IN ONE PLACE
+                </h1>
+                <p class="text-xl mb-8 text-gray-700">Generate lifelike voiceovers with AI-powered text-to-speech technology. Free, instant, and no sign-up required.</p>
+                <div class="flex flex-wrap gap-4 justify-center lg:justify-start">
+                    <a href="#converter" class="bg-black text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-800 transition-colors">
+                        Try Now
+                    </a>
+                    <a href="#voices" class="border-2 border-black px-8 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
+                        Explore Voices
+                    </a>
                 </div>
-                <button class="try-btn">
-                    Try Demo 
-                    <i class="fas fa-arrow-right ms-2"></i>
-                </button>
-            </nav>
+            </div>
+
+            <!-- Animated voice preview cards will be added dynamically -->
+            <div class="flex-1 relative">
+                <div class="grid grid-cols-2 gap-4 max-w-lg mx-auto" id="preview-voices-container">
+                    <!-- Preview voice cards will be loaded here -->
+                </div>
+            </div>
         </div>
-    </header>
+    </section>
 
-    <!-- Main Content -->
-    <main>
-        <!-- Hero Section -->
-        <section class="hero-section">
-            <div class="container text-center">
-                <h1 class="hero-title">ALL YOUR VOICES</h1>
-                <h1 class="hero-title">IN ONE PLACE</h1>
-                <p class="hero-subtitle">Generate lifelike voiceovers with AI-powered text-to-speech technology.</p>
-                <div class="hero-cta-group">
-                    <a href="#converter" class="btn-primary">Get Started</a>
-                    <a href="#voices" class="btn-secondary">Explore Voices</a>
-                </div>
-                <div class="hero-visual">
-                    <div class="waveform-animation">
-                        <div class="waveform-bar"></div>
-                        <div class="waveform-bar"></div>
-                        <div class="waveform-bar"></div>
-                        <div class="waveform-bar"></div>
-                        <div class="waveform-bar"></div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Converter Section -->
-        <section id="converter" class="converter-section">
-            <div class="container">
-                <div class="section-header text-center">
-                    <h2>Convert Text to Speech</h2>
-                    <p>Transform your text into natural-sounding speech in seconds</p>
-                </div>
-                
-                <div class="converter-card">
-                    <form id="tts-form" action="/" method="post">
-                        <div class="form-group">
-                            <textarea 
-                                id="text-input" 
-                                name="text" 
-                                class="text-input" 
-                                placeholder="Type or paste your text here..."
-                                rows="6"
-                            ></textarea>
-                            <div class="character-counter" id="character-count">0 characters</div>
+    <!-- Converter Section -->
+    <section id="converter" class="py-16">
+        <div class="container mx-auto px-4">
+            <div class="max-w-4xl mx-auto">
+                <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+                    <!-- Text Input -->
+                    <div class="mb-8">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Enter Text</label>
+                        <div class="relative">
+                            <textarea id="text-input" name="text" rows="6" 
+                                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 pr-24 p-4 text-base"
+                                    placeholder="Type or paste your text here..."
+                                    maxlength="5000">Hello! I'm excited to try out this amazing text-to-speech service.</textarea>
+                            <div class="absolute right-4 bottom-4 flex items-center space-x-2">
+                                <button id="clear-btn" class="text-gray-400 hover:text-gray-600">
+                                    <i data-lucide="x" class="w-4 h-4"></i>
+                                </button>
+                                <button id="paste-btn" class="text-gray-400 hover:text-gray-600">
+                                    <i data-lucide="clipboard" class="w-4 h-4"></i>
+                                </button>
+                            </div>
                         </div>
-                        
-                        <div class="controls-row">
-                            <div class="control-group">
-                                <label for="voice-group-select">
-                                    <i class="fas fa-globe"></i> Language
-                                </label>
-                                <select id="voice-group-select" class="select-control">
-                                    <option value="" selected disabled>Loading languages...</option>
+                        <div class="flex justify-between text-sm text-gray-500 mt-3">
+                            <span id="char-count">0/5000 characters</span>
+                            <span id="duration">Estimated duration: 0s</span>
+                        </div>
+                    </div>
+
+                    
+
+                    <!-- Voice Selection Controls -->
+                    <div class="flex items-center justify-between mb-6">
+                        <!-- Language Selection -->
+                        <div class="w-64">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Select Language</label>
+                            <div class="relative">
+                                <select id="language-select" 
+                                        class="w-full appearance-none bg-white rounded-lg border-2 border-gray-200 px-4 py-2 pr-10 focus:outline-none focus:border-blue-500 focus:ring-0 cursor-pointer text-gray-700">
+                                    <option value="all">All Languages</option>
+                                    <!-- Language options will be loaded dynamically -->
                                 </select>
-                            </div>
-                            
-                            <div class="control-group hide-on-cards">
-                                <label for="voice-select">
-                                    <i class="fas fa-user"></i> Voice
-                                </label>
-                                <select id="voice-select" name="voice" class="select-control">
-                                    <option value="" selected disabled>Select a language first</option>
-                                </select>
+                                <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                                    <i data-lucide="chevron-down" class="w-5 h-5 text-gray-500"></i>
+                                </div>
                             </div>
                         </div>
-                        
-                        <!-- Voice Cards Container -->
-                        <div class="voice-cards-container" id="voice-cards-container"></div>
-                        
-                        <!-- Audio Player -->
-                        <div class="audio-player" id="audio-player-container" style="display: none;">
-                            <audio id="audio-player" controls></audio>
-                        </div>
-                        
-                        <!-- Hidden field for download flag -->
-                        <input type="hidden" id="download-flag" name="download" value="false">
-                        
-                        <div class="actions-row">
-                            <div>
-                                <button type="button" id="clear-text-btn" class="action-btn-secondary">
-                                    <i class="fas fa-eraser"></i> Clear
-                                </button>
-                                <button type="button" id="sample-text-btn" class="action-btn-secondary">
-                                    <i class="fas fa-quote-right"></i> Sample
-                                </button>
-                            </div>
-                            <div class="action-btns-right">
-                                <button type="button" id="play-btn" class="action-btn-secondary">
-                                    <i class="fas fa-play"></i> Play
-                                </button>
-                                <button type="button" id="download-btn" class="action-btn-primary">
-                                    <i class="fas fa-download"></i> Download
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <!-- Spinner for loading state -->
-                        <div class="loading-indicator" id="loading-spinner">
-                            <div class="spinner">
-                                <div class="bounce1"></div>
-                                <div class="bounce2"></div>
-                                <div class="bounce3"></div>
-                            </div>
-                            <p>Processing your request...</p>
-                        </div>
-                        
-                        <!-- Alert for conversion status -->
-                        <div class="status-alert" id="conversion-alert" role="alert"></div>
-                    </form>
-                </div>
-            </div>
-        </section>
-        
-        <!-- Features Section -->
-        <section id="features" class="features-section">
-            <div class="container">
-                <div class="section-header text-center">
-                    <h2>Key Features</h2>
-                    <p>Everything you need to create perfect voiceovers</p>
-                </div>
-                
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-microphone-alt"></i>
-                        </div>
-                        <h3>Lifelike Voices</h3>
-                        <p>Natural and expressive AI speech that sounds human-like</p>
-                    </div>
-                    
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-language"></i>
-                        </div>
-                        <h3>Multi-language</h3>
-                        <p>Speak in over 30+ languages and various accents</p>
-                    </div>
-                    
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-download"></i>
-                        </div>
-                        <h3>Instant Download</h3>
-                        <p>Get MP3 files immediately with no waiting time</p>
-                    </div>
-                    
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-shield-alt"></i>
-                        </div>
-                        <h3>Private & Secure</h3>
-                        <p>No storage of your text or generated audio files</p>
-                    </div>
-                </div>
-            </div>
-        </section>
 
-        <!-- Voices Gallery Section -->
-        <section id="voices" class="voices-section">
-            <div class="container">
-                <div class="section-header text-center">
-                    <h2>Featured Voices</h2>
-                    <p>Explore our collection of high-quality voices</p>
-                </div>
-                
-                <div class="voices-grid" id="speaker-cards">
-                    <!-- Voice cards will be dynamically inserted here -->
-                </div>
-            </div>
-        </section>
-        
-        <!-- API Section -->
-        <section id="about" class="api-section">
-            <div class="container">
-                <div class="section-header text-center">
-                    <h2>Build Your Own Voice Experiences</h2>
-                    <p>Integrate our text-to-speech technology into your applications</p>
-                </div>
-                
-                <div class="api-card">
-                    <div class="api-content">
-                        <h3>Speech Daddy API</h3>
-                        <p>Add natural-sounding voices to your applications with our simple and powerful API. Perfect for developers building voice-enabled applications, content creators, and businesses.</p>
-                        <div class="api-features">
-                            <div class="api-feature">
-                                <i class="fas fa-check"></i>
-                                <span>Easy integration</span>
-                            </div>
-                            <div class="api-feature">
-                                <i class="fas fa-check"></i>
-                                <span>Developer-friendly documentation</span>
-                            </div>
-                            <div class="api-feature">
-                                <i class="fas fa-check"></i>
-                                <span>High-quality voices</span>
+                        <!-- Search Box -->
+                        <div class="w-64">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Search Voice</label>
+                            <div class="relative">
+                                <input type="text" 
+                                       id="voice-search" 
+                                       class="w-full rounded-lg border-2 border-gray-200 pl-10 pr-4 py-2 focus:outline-none focus:border-blue-500 focus:ring-0"
+                                       placeholder="Search by name...">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i data-lucide="search" class="w-5 h-5 text-gray-400"></i>
+                                </div>
                             </div>
                         </div>
-                        <a href="#" class="btn-primary">Explore API</a>
                     </div>
+
+                    <!-- Voice Selection Cards -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Select Voice</label>
+                        <div class="voice-cards-container" id="voice-cards-container">
+                            <!-- Voice cards will be loaded here -->
+                        </div>
+                    </div>
+                    <div class="mb-8 captcha-container" id="captcha-container" style="display: none;">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Security Verification</label>
+                        <div class="bg-gray-50 rounded-lg p-4 border-2 border-gray-200">
+                            <div class="flex items-center space-x-4">
+                                <div class="captcha-image-container">
+                                    <img src="/captcha" alt="Captcha" class="rounded border-2 border-gray-300" id="captcha-image">
+                                </div>
+                                <div class="flex-1">
+                                    <input type="text" 
+                                           id="captcha-input" 
+                                           name="captcha" 
+                                           class="w-full rounded-lg border-2 border-gray-200 px-4 py-2 focus:outline-none focus:border-blue-500 focus:ring-0"
+                                           placeholder="Enter the characters shown"
+                                           autocomplete="off">
+                                </div>
+                                <button type="button" 
+                                        id="refresh-captcha" 
+                                        class="p-2 rounded-lg border-2 border-gray-200 hover:bg-gray-100 transition-colors"
+                                        title="Refresh captcha">
+                                    <i data-lucide="refresh-cw" class="w-5 h-5 text-gray-600"></i>
+                                </button>
+                            </div>
+                            <p class="text-sm text-gray-600 mt-2">Please enter the characters shown in the image above to continue.</p>
+                        </div>
+                    </div>
+                    <!-- Audio Player -->
+                    <div class="audio-player mb-6" id="audio-player-container" style="display: none;">
+                        <div class="bg-gray-50 rounded-lg p-4 border-2 border-gray-200">
+                            <div class="flex items-center space-x-4">
+                                <button id="audio-play-pause" class="flex items-center justify-center w-12 h-12 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors">
+                                    <i data-lucide="play" class="w-6 h-6" id="play-pause-icon"></i>
+                                </button>
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-2 mb-2">
+                                        <span class="text-sm text-gray-600" id="current-time">0:00</span>
+                                        <div class="flex-1 bg-gray-300 rounded-full h-2 relative cursor-pointer" id="progress-bar">
+                                            <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" id="progress-fill" style="width: 0%"></div>
+                                        </div>
+                                        <span class="text-sm text-gray-600" id="total-time">0:00</span>
+                                    </div>
+                                    <div class="text-sm text-gray-700 font-medium" id="audio-title">Generated Speech</div>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <i data-lucide="volume-2" class="w-5 h-5 text-gray-600"></i>
+                                    <input type="range" min="0" max="100" value="100" class="w-20 h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer" id="volume-slider">
+                                </div>
+                            </div>
+                            <audio id="audio-player" preload="metadata" class="hidden"></audio>
+                        </div>
+                    </div>
+
+                    <!-- Hidden field for download flag -->
+                    <input type="hidden" id="download-flag" name="download" value="false">
+
+                    <!-- Action Buttons -->
+                    <div class="flex flex-wrap gap-4">
+                        <button id="play-btn" 
+                                class="flex items-center space-x-2 bg-black text-white px-6 py-2 rounded-lg font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                            <i data-lucide="play" class="w-5 h-5"></i>
+                            <span>Generate & Play</span>
+                        </button>
+                        <button id="download-btn"
+                                class="flex items-center space-x-2 border-2 border-black px-6 py-2 rounded-lg font-medium hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                            <i data-lucide="download" class="w-5 h-5"></i>
+                            <span>Download MP3</span>
+                        </button>
+                        <button id="sample-text-btn"
+                                class="flex items-center space-x-2 border-2 border-gray-200 px-6 py-2 rounded-lg font-medium hover:bg-gray-50 transition-colors">
+                            <i data-lucide="quote" class="w-5 h-5"></i>
+                            <span>Sample Text</span>
+                        </button>
+                    </div>
+
+                    <!-- Loading Indicator -->
+                    <div class="loading-indicator hidden mt-4 text-center" id="loading-spinner">
+                        <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-gray-200 border-t-blue-600"></div>
+                        <p class="mt-2 text-gray-600">Processing your request...</p>
+                    </div>
+                    
+                    <!-- Status Alert -->
+                    <div class="status-alert hidden mt-4 p-4 rounded-lg" id="conversion-alert" role="alert"></div>
                 </div>
             </div>
-        </section>
-    </main>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-brand">
-                    <i class="fas fa-microphone"></i>
-                    <h3>Speech Daddy</h3>
-                    <p>Powered by Microsoft Edge TTS technology</p>
-                </div>
-                
-                <div class="footer-links">
-                    <div class="footer-group">
-                        <h4>Product</h4>
-                        <a href="#features">Features</a>
-                        <a href="#converter">Converter</a>
-                        <a href="#voices">Voices</a>
-                    </div>
-                    
-                    <div class="footer-group">
-                        <h4>Resources</h4>
-                        <a href="#about">API</a>
-                        <a href="#">Documentation</a>
-                        <a href="#">Support</a>
-                    </div>
-                    
-                    <div class="footer-group">
-                        <h4>Company</h4>
-                        <a href="#">About</a>
-                        <a href="#">Contact</a>
-                        <a href="#">Privacy</a>
-                    </div>
-                </div>
+        </div>
+    </section>
+    
+    <!-- Features Section -->
+    <section id="features" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="max-w-3xl mx-auto text-center mb-12">
+                <h2 class="text-3xl font-bold mb-4">Key Features</h2>
+                <p class="text-gray-600">Everything you need to create perfect voiceovers</p>
             </div>
             
-            <div class="footer-bottom">
-                <p>&copy; 2025 Speech Daddy. All rights reserved.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow transition-all duration-300 hover:shadow-md">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                        <i data-lucide="mic" class="w-6 h-6 text-blue-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Lifelike Voices</h3>
+                    <p class="text-gray-600">Natural and expressive AI speech that sounds human-like</p>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow transition-all duration-300 hover:shadow-md">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                        <i data-lucide="globe" class="w-6 h-6 text-blue-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Multi-language</h3>
+                    <p class="text-gray-600">Speak in over 30+ languages and various accents</p>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow transition-all duration-300 hover:shadow-md">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                        <i data-lucide="download" class="w-6 h-6 text-blue-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Instant Download</h3>
+                    <p class="text-gray-600">Get MP3 files immediately with no waiting time</p>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow transition-all duration-300 hover:shadow-md">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                        <i data-lucide="shield" class="w-6 h-6 text-blue-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Private & Secure</h3>
+                    <p class="text-gray-600">No storage of your text or generated audio files</p>
+                </div>
             </div>
         </div>
-    </footer>
+    </section>
 
-    <!-- Bootstrap JS Bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Voices Gallery Section -->
+    <section id="voices" class="py-16">
+        <div class="container mx-auto px-4">
+            <div class="max-w-3xl mx-auto text-center mb-12">
+                <h2 class="text-3xl font-bold mb-4">Featured Voices</h2>
+                <p class="text-gray-600">Explore our collection of high-quality voices</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="featured-voices-container">
+                <!-- Featured voice cards will be loaded here -->
+            </div>
+        </div>
+    </section>
     
-    <!-- Custom JavaScript -->
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-</body>
-</html>
+    <!-- API Section -->
+    <section id="about" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="max-w-3xl mx-auto text-center mb-12">
+                <h2 class="text-3xl font-bold mb-4">Build Your Own Voice Experiences</h2>
+                <p class="text-gray-600">Integrate our text-to-speech technology into your applications</p>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-lg p-8 max-w-3xl mx-auto">
+                <h3 class="text-2xl font-bold mb-4">Speech Daddy API</h3>
+                <p class="text-gray-600 mb-6">Add natural-sounding voices to your applications with our simple and powerful API. Perfect for developers building voice-enabled applications, content creators, and businesses.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                    <div class="flex items-start space-x-3">
+                        <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mt-0.5">
+                            <i data-lucide="check" class="w-4 h-4 text-white"></i>
+                        </div>
+                        <p class="text-gray-700">Easy integration with any platform</p>
+                    </div>
+                    <div class="flex items-start space-x-3">
+                        <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mt-0.5">
+                            <i data-lucide="check" class="w-4 h-4 text-white"></i>
+                        </div>
+                        <p class="text-gray-700">Over 300+ voices to choose from</p>
+                    </div>
+                    <div class="flex items-start space-x-3">
+                        <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mt-0.5">
+                            <i data-lucide="check" class="w-4 h-4 text-white"></i>
+                        </div>
+                        <p class="text-gray-700">Developer-friendly documentation</p>
+                    </div>
+                    <div class="flex items-start space-x-3">
+                        <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mt-0.5">
+                            <i data-lucide="check" class="w-4 h-4 text-white"></i>
+                        </div>
+                        <p class="text-gray-700">Affordable pricing plans</p>
+                    </div>
+                </div>
+                
+                <a href="#" class="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                    Explore API Documentation
+                </a>
+            </div>
+        </div>
+    </section>
+</main>
+
+<script>
+    // Pass server-side data to JavaScript
+    window.captchaRequired = {{ captcha_required_json|tojson }};
+</script>
+{% endblock %}
